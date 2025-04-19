@@ -4,13 +4,20 @@ const express = require('express');
 const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
+const cors = require('cors');
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
+
 const USERS_FILE = path.join(__dirname, 'users.json');
 
 const { searchGames, getTypes, getAllGames } = require('./cache'); // ✅ Updated import
+
+app.use(cors({
+    origin: 'https://tryaslot.com'
+  }));
 
 // SendGrid setup
 const sgMail = require('@sendgrid/mail');
