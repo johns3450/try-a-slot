@@ -1,14 +1,14 @@
 {
   "name": "try-a-slot",
   "version": "1.0.0",
-  "main": "index.js",
+  "description": "Backend API for Try'A'Slot (email signup, games cache, types API)",
+  "main": "server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "G Johnson",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "@sendgrid/mail": "^8.1.5",
     "axios": "^1.8.4",
