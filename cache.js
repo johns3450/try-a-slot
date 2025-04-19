@@ -36,7 +36,7 @@ async function fetchGameData() {
     try {
       const res = await axios.get(url, {
         headers: {
-          'Origin': BASE_URL,
+          'Origin': 'https://tryaslot.com',
           'Accept': 'application/json'
         }
       });

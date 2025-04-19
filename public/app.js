@@ -43,6 +43,7 @@ if (!localStorage.getItem('initialOverlayShown')) {
   }
 
 document.addEventListener('DOMContentLoaded', () => {
+    const API_BASE = 'https://try-a-slot-backend.onrender.com';
     const emailModal = document.getElementById('emailModal');
     const submitEmail = document.getElementById('submitEmail');
     const emailInput = document.getElementById('emailInput');
@@ -238,7 +239,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchGamesFromLocalAPI() {
         try {
-            const initialRes = await fetch(`/api/games?limit=${perPage}&offset=0&order=asc&order_by=name`);
+            const initialRes = await fetch(`${API_BASE}/api/games?limit=${perPage}&offset=0&order=asc&order_by=name`);
             const initialJson = await initialRes.json();
             totalGamesCount = initialJson.meta ? initialJson.meta.total : initialJson.data.length;
             allGames = initialJson.data || [];
@@ -255,7 +256,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchAllGames() {
         try {
-            const res = await fetch('/api/games');
+            const res = await fetch(`${API_BASE}/api/games`);
             const json = await res.json();
             if (json.data && json.data.length > allGames.length) {
                 allGames = json.data;
@@ -275,7 +276,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchCategories() {
         try {
-            const res = await fetch('/api/types');
+            const res = await fetch(`${API_BASE}/api/types`);
             const json = await res.json();
             const categories = json.data || [];
             const unwanted = [
@@ -459,7 +460,7 @@ document.addEventListener('DOMContentLoaded', () => {
         currentSearchPage = 1;
 
         try {
-            const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+            const res = await fetch(`${API_BASE}/api/search?q=${encodeURIComponent(query)}`);
             const json = await res.json();
             filteredGameMatches = json.data || [];
 
