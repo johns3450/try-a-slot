@@ -43,7 +43,7 @@ if (!localStorage.getItem('initialOverlayShown')) {
   }
 
 document.addEventListener('DOMContentLoaded', () => {
-    const API_BASE = 'https://try-a-slot-backend.onrender.com';
+    const API_BASE = 'https://try-a-slot.onrender.com';
     const emailModal = document.getElementById('emailModal');
     const submitEmail = document.getElementById('submitEmail');
     const emailInput = document.getElementById('emailInput');
