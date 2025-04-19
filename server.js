@@ -6,6 +6,7 @@ const path = require('path');
 const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 3000;
+const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 const USERS_FILE = path.join(__dirname, 'users.json');
 
