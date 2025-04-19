@@ -1,0 +1,21 @@
+{
+  "name": "try-a-slot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@sendgrid/mail": "^8.1.5",
+    "axios": "^1.8.4",
+    "better-sqlite3": "^11.9.1",
+    "body-parser": "^2.2.0",
+    "express": "^5.1.0",
+    "node-cron": "^3.0.3",
+    "nodemailer": "^6.10.1"
+  }
+}

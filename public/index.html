@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TRY'A'SLOT - Play 25,000+ demo slots from 500+ providers for Free</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
+  <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.6.0/uicons-solid-rounded/css/uicons-solid-rounded.css'>
+  <link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"
+/>
+<script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js"></script>
+<link rel="icon" href="/assets/favicon.ico" type="image/x-icon">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16x16.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+<link rel="manifest" href="/assets/site.webmanifest">
+<meta name="theme-color" content="#111">
+</head>
+<body>
+    <div id="initialOverlay"></div>
+
+    
+    <header>
+        <div class="header-container">
+          <div class="logo-container">
+            <img src="assets/logo.png" alt="Try'A'Slot Logo" class="site-logo" />
+          </div>
+          <div id="userProfile" class="person-icon">
+            <i class="fi fi-sr-user"></i>
+          </div>
+        </div>
+      </header>
+
+  <div class="content-wrapper">
+
+    <!-- Added Text Here -->
+    <div class="intro-text">
+      <p>🎰 25,000+ Slots&nbsp;&nbsp;&nbsp;✅ All Free To Play</p>
+    </div>
+
+    <div class="categories" id="categoryBar"></div>
+
+  <main>
+
+    <div class="search-bar-container">
+        <form id="searchForm" autocomplete="off">
+          <input
+            type="search"
+            id="searchInput"
+            name="searchInput"
+            placeholder="Search slots..."
+            autocomplete="off"
+          />
+          <button type="submit" class="search-icon">
+            <i class="fi fi-rr-search" aria-hidden="true"></i>
+          </button>
+        </form>
+      </div>
+
+      <div id="noResultsMessage" class="hidden">No games found.</div>
+
+      <div id="spinner" class="spinner hidden"></div>
+
+    <div class="games-grid" id="gamesGrid">
+      <!-- Dynamically loaded by app.js -->
+    </div>
+
+    <div class="games-count-container">
+        <div id="gamesCount"></div>
+    </div>
+    
+    <div class="load-more-container">
+        <button id="loadMoreBtn">Load More</button>
+      </div>
+
+  </main>
+
+  <footer id="stickyFooter">
+    <!-- Collapsed footer content -->
+    <div class="footer-collapsed">
+      <p>© 2025 Try'A'Slot. All rights reserved.</p>
+      <p><a href="#" id="footerExpand" class="footer-toggle">Expand &#9660;</a></p>
+    </div>
+    <!-- Expanded footer content (initially hidden) -->
+    <div class="footer-expanded" style="display: none;">
+      <p><a href="#" id="footerCollapse" class="footer-toggle">Collapse &#9650;</a></p>
+      <p>© 2025 Try'A'Slot. All rights reserved.</p>
+<p>
+  <a href="https://808hq.com" target="_blank" rel="noopener">
+    Try'A'Slot is operated by 808 Digital
+  </a>
+</p>
+
+      <p>
+        <a href="/privacy.html">
+          Privacy &amp; Cookies Policy
+        </a>
+      </p>
+    </div>
+  </footer>  
+  
+
+</div>
+
+<!-- Profile Modal -->
+<div id="profileModal" class="profile-modal hidden">
+    <div class="profile-modal-content">
+      <span class="close-btn">&times;</span>
+      <h3>You are logged in as</h3>
+      <p id="loggedInEmail"></p>
+      <button id="logoutBtn">Log Out</button>
+    </div>
+  </div>
+
+  <div id="emailModal" class="modal hidden">
+    <div class="email-modal-content">
+      <span class="close-btn" id="closeEmailModal">&times;</span>
+  
+      <!-- State 1: Email Input -->
+      <div id="emailInputState">
+        <div class="modal-body">
+          <h2>Enter your email to play</h2>
+          <input type="email" id="userEmail" placeholder="you@example.com" />
+        </div>
+        <div class="modal-footer">
+          <button id="emailSubmit"><i class="fi fi-sr-play"></i>Play Now</button>
+          <div class="error-message"></div>
+        </div>
+      </div>
+  
+      <!-- State 2: Registration -->
+      <div id="registrationState" class="hidden">
+        <div class="modal-body">
+          <h2>Almost there...</h2>
+          <p>Please select your country and complete the captcha.</p>
+          <select id="countrySelector"></select>
+          <div class="captcha-container">
+            <canvas id="captchaCanvas" width="150" height="50" style="border:1px solid #ccc"></canvas>
+            <button type="button" id="refreshCaptcha">↻</button>
+          </div>
+          <input
+            type="text"
+            id="captchaInput"
+            placeholder="Enter the letters above"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-footer">
+          <button id="registerSubmit"><i class="fi fi-sr-play"></i>Play Now</button>
+          <div class="error-message"></div>
+        </div>
+      </div>
+  
+      <!-- State 3: Verification -->
+      <div id="verificationState" class="hidden">
+        <div class="modal-body">
+          <h2>Check Your Email</h2>
+          <p>We have sent you a verification email.</p>
+          <p>Please click the link in your email, then you're free to play 25,000+ games.</p>
+        </div>
+        <div class="modal-footer">
+          <button id="verificationDone"><i class="fi fi-sr-play"></i>Play Now</button>
+          <div class="error-message"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+
+  <!-- Fullscreen game overlay; initially hidden -->
+<div id="gameOverlay" class="hidden">
+    <button id="closeGameOverlay" class="close-button">✕</button>
+    <div id="yourGameContainer"></div>
+  </div>
+
+  <button id="backToTop" aria-label="Back to top">
+    <i class="fi fi-sr-angle-up" aria-hidden="true"></i>
+  </button>
+
+  <script src="app.js"></script>
+</body>
+</html>
