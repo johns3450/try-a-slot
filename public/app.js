@@ -327,31 +327,48 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupCategoryListeners() {
         const categoryButtons = categoryBar.querySelectorAll('button');
         categoryButtons.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                searchInput.value = '';
-                currentSearchPage = 1;
-                filteredGameDetails = [];
+          btn.addEventListener('click', async () => {
+            const selected = btn.dataset.category;
+            console.log('[CATEGORY CLICKED]', selected);
+      
+            // 1) Reset UI
+            searchInput.value      = '';
+            currentSearchPage      = 1;
+            filteredGameDetails    = [];
+            gamesGrid.innerHTML    = '';
+            showSpinner();
+      
+            // 2) Active class toggle
+            categoryButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+      
+            // 3) Load correct list
+            if (selected === 'all') {
+              console.log('[USING allGames]');
+              filteredGameMatches = allGames;
+            } else {
+              console.log('[FETCHING CATEGORY]', selected);
+              try {
+                const res  = await fetch(`${API_BASE}/api/games/type/${selected}`);
+                console.log('[NETWORK]', res.url, res.status);
+                const json = await res.json();
+                filteredGameMatches = json.data || [];
+              } catch (err) {
+                console.error('Category fetch failed:', err);
                 filteredGameMatches = [];
-                categoryButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-
-                const selected = btn.getAttribute('data-category');
-                const filtered = selected === 'all'
-                    ? allGames
-                    : allGames.filter(game => (game.type_slug || 'misc') === selected);
-
-                gamesGrid.innerHTML = '';
-                showNoResults(filtered.length === 0);
-                showSpinner();
-                if (filtered.length > 0) {
-                    filteredGameMatches = filtered;
-                    currentSearchPage = 1;
-                    filteredGameDetails = [];
-                    await renderCurrentSearchPage();
-                }
-            });
+              }
+            }
+      
+            // 4) Render
+            hideSpinner();
+            showNoResults(filteredGameMatches.length === 0);
+            if (filteredGameMatches.length) {
+              await renderCurrentSearchPage();
+            }
+          });
         });
-    }
+      }
+      
 
     async function fetchDetailsFor(gamesToLoad) {
         const params = new URLSearchParams();
