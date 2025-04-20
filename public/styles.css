@@ -733,12 +733,19 @@ input#captchaInput {
     position: absolute;
     top: 15px;
     right: 10px;
+  
     width: 2rem;
     height: 2rem;
     padding: 0;
-    display: inline-flex;
+    
+    /* use flex (not inline‑flex) to avoid Safari baseline quirks */
+    display: flex;
     align-items: center;
     justify-content: center;
+  
+    /* make text vertically centered as well */
+    line-height: 2rem;
+  
     background: #fff;
     border: none;
     color: #111;
@@ -747,6 +754,7 @@ input#captchaInput {
     z-index: 10000;
     border-radius: 50%;
     opacity: 0.8;
+  
     appearance: none;
     -webkit-appearance: none;
   }

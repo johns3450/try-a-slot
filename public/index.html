@@ -45,16 +45,23 @@
   <main>
 
     <div class="search-bar-container">
-        <form id="searchForm" autocomplete="off">
+        <form
+          id="searchForm"
+          action="/search"
+          method="get"
+          autocomplete="off"
+          role="search"
+        >
           <input
             type="search"
             id="searchInput"
-            name="searchInput"
+            name="q"
             placeholder="Search slots..."
             autocomplete="off"
             enterkeyhint="search"
+            inputmode="search"
           />
-          <button type="submit" class="search-icon">
+          <button type="submit" class="search-icon" aria-label="Search">
             <i class="fi fi-rr-search" aria-hidden="true"></i>
           </button>
         </form>
