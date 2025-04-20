@@ -106,7 +106,7 @@ app.post('/api/register', (req, res) => {
           Click to verify your email and unlock 25,000+ slot demo games instantly!
         </div>
         <div style="background-color: #f2f2f2; padding: 40px;">
-          <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; text-align: center; font-family: Arial, sans-serif; font-size: 14px; color: #333;">
+          <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; text-align: center; font-family: Arial, sans-serif; font-size: 14px; color: #111;">
             <img src="https://tryaslot.com/assets/logo.png" alt="TRY'A'SLOT" style="max-width: 200px; margin: 0 auto 20px; display: block;">
             <h2>Verify Your Email</h2>
             <p>Hello,</p>
@@ -115,8 +115,8 @@ app.post('/api/register', (req, res) => {
               <a href="${verificationUrl}" style="display: inline-block; background-color: #eb2f06; color: #fff; font-weight: 600; font-size: 16px; padding: 8px 25px; text-decoration: none; border-radius: 4px;">Verify Email</a>
             </p>
             <p>Once you verify, you’ll be able to play <strong>25,000+ slot demo games</strong> from <strong>400+ providers</strong> instantly.</p>
-            <p style="font-size: 14px; color: #555;">If the button doesn’t work, copy and paste the following link into your browser:</p>
-            <p style="font-size: 14px; color: #555;">${verificationUrl}</p>
+            <p style="font-size: 14px; color: #111;">If the button doesn’t work, copy and paste the following link into your browser:</p>
+            <p style="font-size: 14px; color: #111;">${verificationUrl}</p>
           </div>
         </div>
       `
