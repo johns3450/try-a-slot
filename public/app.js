@@ -327,43 +327,31 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupCategoryListeners() {
         const categoryButtons = categoryBar.querySelectorAll('button');
         categoryButtons.forEach(btn => {
-          btn.addEventListener('click', async () => {
-            // reset UI
-            searchInput.value = '';
-            currentSearchPage = 1;
-            filteredGameDetails = [];
-            gamesGrid.innerHTML = '';
-            showSpinner();
-      
-            // active state
-            categoryButtons.forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            const selected = btn.getAttribute('data-category');
-      
-            // fetch exactly the list the server sorts for us
-            if (selected === 'all') {
-              // Hot/All: we already loaded first page into allGames
-              filteredGameMatches = allGames;
-            } else {
-              try {
-                const res  = await fetch(`${API_BASE}/api/games/type/${selected}`);
-                const json = await res.json();
-                filteredGameMatches = json.data || [];
-              } catch (err) {
-                console.error('Failed to fetch games for category:', err);
+            btn.addEventListener('click', async () => {
+                searchInput.value = '';
+                currentSearchPage = 1;
+                filteredGameDetails = [];
                 filteredGameMatches = [];
-              }
-            }
-      
-            hideSpinner();
-            showNoResults(filteredGameMatches.length === 0);
-      
-            if (filteredGameMatches.length > 0) {
-              await renderCurrentSearchPage();
-            }
-          });
+                categoryButtons.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+
+                const selected = btn.getAttribute('data-category');
+                const filtered = selected === 'all'
+                    ? allGames
+                    : allGames.filter(game => (game.type_slug || 'misc') === selected);
+
+                gamesGrid.innerHTML = '';
+                showNoResults(filtered.length === 0);
+                showSpinner();
+                if (filtered.length > 0) {
+                    filteredGameMatches = filtered;
+                    currentSearchPage = 1;
+                    filteredGameDetails = [];
+                    await renderCurrentSearchPage();
+                }
+            });
         });
-      }
+    }
 
     async function fetchDetailsFor(gamesToLoad) {
         const params = new URLSearchParams();
