@@ -138,12 +138,9 @@ function searchGames(query) {
 }
 
 function getAllGames(limit, offset) {
-  const pinned = pinnedGameIds.map(id => `'${id}'`).join(',');
   const base = `
     SELECT * FROM games
-    ORDER BY
-      CASE WHEN id IN (${pinned}) THEN 0 ELSE 1 END,
-      updated_at DESC
+    ORDER BY updated_at DESC
   `;
 
   if (typeof limit !== 'undefined' && typeof offset !== 'undefined') {
