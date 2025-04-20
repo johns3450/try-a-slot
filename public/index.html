@@ -123,74 +123,45 @@
     </div>
   </div>
 
-<!-- State 1: Email Input -->
-<form
-  id="emailForm"
-  action="#"
-  method="get"
-  autocomplete="off"
-  role="search"
-  class="email-modal-state"
->
-  <div class="modal-body">
-    <h2>Enter your email to play</h2>
-    <input
-      type="email"
-      id="userEmail"
-      placeholder="you@example.com"
-      autocomplete="off"
-      inputmode="email"
-      enterkeyhint="go"
-    />
-  </div>
-  <div class="modal-footer">
-    <button type="submit" id="emailSubmit">
-      <i class="fi fi-sr-play"></i>Play Now
-    </button>
-    <div class="error-message"></div>
-  </div>
-</form>
-
-<!-- State 2: Registration -->
-<form
-  id="registrationForm"
-  action="#"
-  method="get"
-  autocomplete="off"
-  role="search"
-  class="email-modal-state hidden"
->
-  <div class="modal-body">
-    <h2>Almost there...</h2>
-    <p>Please select your country and complete the captcha.</p>
-    <select id="countrySelector"></select>
-
-    <div class="captcha-container">
-      <canvas
-        id="captchaCanvas"
-        width="150"
-        height="50"
-        style="border:1px solid #ccc"
-      ></canvas>
-      <button type="button" id="refreshCaptcha">↻</button>
-    </div>
-
-    <input
-      type="text"
-      id="captchaInput"
-      placeholder="Enter the letters above"
-      autocomplete="off"
-      inputmode="text"
-      enterkeyhint="go"
-    />
-  </div>
-  <div class="modal-footer">
-    <button type="submit" id="registerSubmit">
-      <i class="fi fi-sr-play"></i>Play Now
-    </button>
-    <div class="error-message"></div>
-  </div>
-</form>
+<!-- Email Modal -->
+  <div id="emailModal" class="modal hidden">
+    <div class="email-modal-content">
+      <span class="close-btn" id="closeEmailModal">&times;</span>
+  
+      <!-- State 1: Email Input -->
+      <div id="emailInputState">
+        <div class="modal-body">
+          <h2>Enter your email to play</h2>
+          <input type="email" id="userEmail" placeholder="you@example.com" />
+        </div>
+        <div class="modal-footer">
+          <button id="emailSubmit"><i class="fi fi-sr-play"></i>Play Now</button>
+          <div class="error-message"></div>
+        </div>
+      </div>
+  
+      <!-- State 2: Registration -->
+      <div id="registrationState" class="hidden">
+        <div class="modal-body">
+          <h2>Almost there...</h2>
+          <p>Please select your country and complete the captcha.</p>
+          <select id="countrySelector"></select>
+          <div class="captcha-container">
+            <canvas id="captchaCanvas" width="150" height="50" style="border:1px solid #ccc"></canvas>
+            <button type="button" id="refreshCaptcha">↻</button>
+          </div>
+          <input
+            type="text"
+            id="captchaInput"
+            placeholder="Enter the letters above"
+            autocomplete="off"
+          />
+        </div>
+        <div class="modal-footer">
+          <button id="registerSubmit"><i class="fi fi-sr-play"></i>Play Now</button>
+          <div class="error-message"></div>
+        </div>
+      </div>
   
       <!-- State 3: Verification -->
       <div id="verificationState" class="hidden">
