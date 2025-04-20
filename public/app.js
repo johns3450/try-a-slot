@@ -29,9 +29,9 @@ if (!localStorage.getItem('initialOverlayShown')) {
         }, { once: true });
       });
   
-} else {
+  } else {
     document.getElementById('initialOverlay')?.remove();
-}
+  }
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
@@ -76,7 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
           errorEl.textContent = '';
           errorEl.classList.remove('show');
         }
-    }
+      }
 
     const userEmailField = document.getElementById('userEmail');
     userEmailField.addEventListener('keydown', e => {
@@ -123,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const choices = [
             ...top,
             ...rest
-        ];
+          ];
       
         const countrySelect = document.getElementById('countrySelector');
         const countryChoice = new Choices(countrySelect, {
@@ -150,7 +150,7 @@ document.addEventListener('DOMContentLoaded', () => {
             countrySelect.parentNode.classList.add('has-value');
           }
         });
-    }
+      }
 
     function generateCaptchaText() {
         const chars = 'ABCDEFGHJKMNPRSTUVWXYZabcdefghjkmnprstuvwxyz';
@@ -218,21 +218,21 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchGamesFromLocalAPI() {
-        try {
-            const initialRes = await fetch(`${API_BASE}/api/games?limit=${perPage}&offset=0`);
-            const initialJson = await initialRes.json();
-            totalGamesCount = initialJson.meta ? initialJson.meta.total : initialJson.data.length;
-            allGames = initialJson.data || [];
-            filteredGameMatches = allGames;
-            currentSearchPage = 1;
-            filteredGameDetails = [];
-            await renderCurrentSearchPage();
-            showNoResults(allGames.length === 0);
-            fetchAllGames();
-        } catch (err) {
-            console.error('Failed to load local games:', err);
-        }
+    try {
+        const initialRes = await fetch(`${API_BASE}/api/games?limit=${perPage}&offset=0`);
+        const initialJson = await initialRes.json();
+        totalGamesCount = initialJson.meta ? initialJson.meta.total : initialJson.data.length;
+        allGames = initialJson.data || [];
+        filteredGameMatches = allGames;
+        currentSearchPage = 1;
+        filteredGameDetails = [];
+        await renderCurrentSearchPage();
+        showNoResults(allGames.length === 0);
+        fetchAllGames();
+    } catch (err) {
+        console.error('Failed to load local games:', err);
     }
+}
 
     async function fetchAllGames() {
         try {
@@ -339,6 +339,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     filtered = allGames; // Preserve server order with pinned games first
                 } else {
                     filtered = allGames.filter(game => (game.type_slug || 'misc') === selected);
+                    // Sort by updated_at descending for categories, assuming field exists
                     filtered.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
                 }
                 filteredGameMatches = filtered;
@@ -553,26 +554,28 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
-            });
-            const data = await res.json();
+              });
+          const data = await res.json();
       
-            if (data.status === 'verified') {
-                localStorage.setItem('tryaslot-email', email);
-                userEmail = email;
-                hideModal();
-                updateUserProfileVisibility();
-            } else if (data.status === 'pending') {
-                showModal('verificationState');
-            } else if (data.status === 'new') {
-                showModal('registrationState');
-            }
+          if (data.status === 'verified') {
+            localStorage.setItem('tryaslot-email', email);
+            userEmail = email;
+            hideModal();
+            updateUserProfileVisibility();
+          } else if (data.status === 'pending') {
+            showModal('verificationState');
+          } else if (data.status === 'new') {
+            showModal('registrationState');
+          }
         } catch (err) {
-            console.error('Login error:', err);
-            showError('An error occurred. Please try again.');
+          console.error('Login error:', err);
+          showError('An error occurred. Please try again.');
         }
-    });
+      });
+      
 
     document.getElementById('registerSubmit').addEventListener('click', async () => {
+
         showError('', 'registerSubmit-start');
     
         const email = pendingEmail;
@@ -599,7 +602,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            });              
+              });              
             const data = await res.json();
     
             if (data.success) {
@@ -614,12 +617,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('refreshCaptcha')?.addEventListener('click', () => {
+
         showError('');
         renderCaptcha();
         document.getElementById('captchaInput').value = '';
     });
 
     document.getElementById('verificationDone').addEventListener('click', async () => {
+
         showError('');
 
         const email = pendingEmail || document.getElementById('userEmail').value.trim();
@@ -633,7 +638,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
-            });              
+              });              
             const data = await res.json();
 
             if (data.verified) {
@@ -676,44 +681,3 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchGamesFromLocalAPI();
     fetchCategories();
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    const footerExpand = document.getElementById('footerExpand');
-    const footerCollapse = document.getElementById('footerCollapse');
-    const footerCollapsed = document.querySelector('.footer-collapsed');
-    const footerExpanded = document.querySelector('.footer-expanded');
-
-    footerExpand.addEventListener('click', (e) => {
-        e.preventDefault();
-        footerCollapsed.style.display = 'none';
-        footerExpanded.style.display = 'block';
-    });
-
-    footerCollapse.addEventListener('click', (e) => {
-        e.preventDefault();
-        footerExpanded.style.display = 'none';
-        footerCollapsed.style.display = 'block';
-    });
-
-    function updateUserProfileVisibility() {
-        if (localStorage.getItem('tryaslot-email')) {
-            document.getElementById('userProfile').style.display = 'block';
-        } else {
-            document.getElementById('userProfile').style.display = 'none';
-        }
-    }
-
-    updateUserProfileVisibility();
-});
-
-if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-    const btn = document.getElementById('backToTop');
-  
-    window.addEventListener('scroll', () => {
-      btn.classList.toggle('show', window.scrollY > 500);
-    });
-  
-    btn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-}
