@@ -1,8 +1,8 @@
-const axios      = require('axios');
-const cron       = require('node-cron');
-const Database   = require('better-sqlite3');
-const path       = require('path');
-const db         = new Database(path.join(__dirname, 'games.db'));
+const axios    = require('axios');
+const cron     = require('node-cron');
+const Database = require('better-sqlite3');
+const path     = require('path');
+const db       = new Database(path.join(__dirname, 'games.db'));
 db.pragma('journal_mode = WAL');
 
 // ─── SCHEMA ───────────────────────────────────────────────────────────────────
@@ -36,7 +36,7 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Your desired pinned‑IDs, in the exact order you want them to appear:
+// Your 60 pinned IDs in the exact desired order:
 const pinnedGameIds = [
   12643, 359, 17845, 3272, 3311, 1045, 4622, 2570, 1052, 17680,
   2782, 1873, 761, 2521, 2411, 9914, 4447, 3276, 9759, 1081,
@@ -50,7 +50,8 @@ const pinnedGameIds = [
 async function fetchGameData() {
   let page = 1, allGames = [];
   while (true) {
-    const url = `https://slotslaunch.com/api/games?token=RbG9QL8cCFe376wMMYFzU19hNWTmT5uTNHcQ2WUgWdnv90PXxd&published=1&page=${page}&per_page=150`;
+    const url =
+      `https://slotslaunch.com/api/games?token=RbG9QL8cCFe376wMMYFzU19hNWTmT5uTNHcQ2WUgWdnv90PXxd&published=1&page=${page}&per_page=150`;
     try {
       const res = await axios.get(url, {
         headers: {
@@ -77,7 +78,7 @@ async function updateCache() {
     console.log('🔄 Updating game and type cache...');
     const games = await fetchGameData();
 
-    // clear out old data
+    // clear old data
     db.prepare('DELETE FROM games').run();
     db.prepare('DELETE FROM types').run();
     db.prepare('DELETE FROM pinned').run();
@@ -87,8 +88,8 @@ async function updateCache() {
       INSERT INTO games (id, name, type_slug, thumb, url, updated_at)
       VALUES (?, ?, ?, ?, ?, ?)
     `);
-    const gameTx = db.transaction(games => {
-      for (const g of games) {
+    const gameTx = db.transaction(all => {
+      for (const g of all) {
         insertGame.run(
           g.id,
           g.name,
@@ -101,7 +102,7 @@ async function updateCache() {
     });
     gameTx(games);
 
-    // build & insert types counts
+    // build & insert types
     const counts = {}, names = {};
     for (const g of games) {
       const slug = g.type_slug || 'misc';
@@ -135,36 +136,69 @@ async function updateCache() {
   }
 }
 
-// run on startup and then every day at 00:01
+// schedule & initial run
 cron.schedule('1 0 * * *', updateCache);
 updateCache();
 
 // ─── QUERY FUNCTIONS ─────────────────────────────────────────────────────────
-function searchGames(query) {
-  if (!query) {
-    // your “search” UI can still list all by date if they hit Search with no input
-    return db.prepare('SELECT * FROM games ORDER BY updated_at DESC').all();
-  }
-  return db.prepare(
-    'SELECT * FROM games WHERE lower(name) LIKE ? ORDER BY updated_at DESC'
-  ).all(`%${query.toLowerCase()}%`);
-}
 
+/**
+ * Hot/All page: pinned first (in your custom order), then everything else by updated_at DESC.
+ */
 function getAllGames(limit, offset) {
-  // “Hot/All” screen: pinned first, in YOUR order, then newest
-  const sql = `
-    SELECT g.*
-      FROM games g
-      LEFT JOIN pinned p
-        ON g.id = p.id
+  // build a CASE expression that ranks pinned IDs 0..59, all others 60
+  const whenClauses = pinnedGameIds
+    .map((id, idx) => `WHEN ${id} THEN ${idx}`)
+    .join(' ');
+  const rankExpr = `CASE id ${whenClauses} ELSE ${pinnedGameIds.length} END`;
+
+  let sql = `
+    SELECT *
+      FROM games
      ORDER BY
-       CASE WHEN p.id IS NOT NULL THEN 0 ELSE 1 END,
-       g.updated_at DESC
+       ${rankExpr} ASC,
+       updated_at DESC
   `;
+
   if (limit != null && offset != null) {
-    return db.prepare(`${sql} LIMIT ? OFFSET ?`).all(limit, offset);
+    sql += ' LIMIT ? OFFSET ?';
+    return db.prepare(sql).all(limit, offset);
   }
   return db.prepare(sql).all();
+}
+
+/**
+ * Category pages: only games of a given type, most-recent-first.
+ */
+function getGamesByType(typeSlug, limit, offset) {
+  let sql = `
+    SELECT *
+      FROM games
+     WHERE type_slug = ?
+     ORDER BY updated_at DESC
+  `;
+
+  if (limit != null && offset != null) {
+    sql += ' LIMIT ? OFFSET ?';
+    return db.prepare(sql).all(typeSlug, limit, offset);
+  }
+  return db.prepare(sql).all(typeSlug);
+}
+
+/**
+ * Search UI: pure updated_at DESC (ignoring pinned entirely).
+ */
+function searchGames(query) {
+  if (!query) {
+    return db
+      .prepare('SELECT * FROM games ORDER BY updated_at DESC')
+      .all();
+  }
+  return db
+    .prepare(
+      'SELECT * FROM games WHERE lower(name) LIKE ? ORDER BY updated_at DESC'
+    )
+    .all(`%${query.toLowerCase()}%`);
 }
 
 function getTypes() {
@@ -172,7 +206,8 @@ function getTypes() {
 }
 
 module.exports = {
-  searchGames,
-  getAllGames,
+  getAllGames,     // for hot/all only!
+  getGamesByType,  // for each category page
+  searchGames,     // for search bar
   getTypes
 };
