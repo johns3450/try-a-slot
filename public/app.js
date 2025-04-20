@@ -219,22 +219,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function fetchGamesFromLocalAPI() {
-        try {
-            const initialRes = await fetch(`${API_BASE}/api/games?limit=${perPage}&offset=0`);
-            const initialJson = await initialRes.json();
-            totalGamesCount = initialJson.meta ? initialJson.meta.total : initialJson.data.length;
-            allGames = initialJson.data || [];
-            filteredGameMatches = allGames;
-            currentSearchPage = 1;
-            filteredGameDetails = [];
-            await renderCurrentSearchPage();
-            showNoResults(allGames.length === 0);
-            // optional: pre‑fetch full list for “all” tab nav
-            fetchAllGames();
-        } catch (err) {
-            console.error('Failed to load local games:', err);
-        }
+    try {
+        const initialRes = await fetch(`${API_BASE}/api/games?limit=${perPage}&offset=0`);
+        const initialJson = await initialRes.json();
+        totalGamesCount = initialJson.meta ? initialJson.meta.total : initialJson.data.length;
+        allGames = initialJson.data || [];
+        filteredGameMatches = allGames;
+        currentSearchPage = 1;
+        filteredGameDetails = [];
+        await renderCurrentSearchPage();
+        showNoResults(allGames.length === 0);
+        // optional: pre‑fetch full list for “all” tab nav
+        fetchAllGames();
+    } catch (err) {
+        console.error('Failed to load local games:', err);
     }
+}
 
     async function fetchAllGames() {
         try {
@@ -327,44 +327,43 @@ document.addEventListener('DOMContentLoaded', () => {
     function setupCategoryListeners() {
         const categoryButtons = categoryBar.querySelectorAll('button');
         categoryButtons.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                // reset UI state
-                searchInput.value = '';
-                currentSearchPage = 1;
-                filteredGameDetails = [];
-                gamesGrid.innerHTML = '';
-                showSpinner();
-    
-                // active button
-                categoryButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                const selected = btn.getAttribute('data-category');
-    
-                // load matches from server
-                if (selected === 'all') {
-                    // hot/all: use the pinned+recent list we already fetched
-                    filteredGameMatches = allGames;
-                } else {
-                    // other categories: fetch only that type, most‑recent‑first
-                    try {
-                        const res  = await fetch(`${API_BASE}/api/games/type/${selected}`);
-                        const json = await res.json();
-                        filteredGameMatches = json.data || [];
-                    } catch (err) {
-                        console.error('Failed to fetch games for category:', err);
-                        filteredGameMatches = [];
-                    }
-                }
-    
-                hideSpinner();
-                showNoResults(filteredGameMatches.length === 0);
-    
-                if (filteredGameMatches.length > 0) {
-                    await renderCurrentSearchPage();
-                }
-            });
+          btn.addEventListener('click', async () => {
+            // reset UI
+            searchInput.value = '';
+            currentSearchPage = 1;
+            filteredGameDetails = [];
+            gamesGrid.innerHTML = '';
+            showSpinner();
+      
+            // active state
+            categoryButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            const selected = btn.getAttribute('data-category');
+      
+            // fetch exactly the list the server sorts for us
+            if (selected === 'all') {
+              // Hot/All: we already loaded first page into allGames
+              filteredGameMatches = allGames;
+            } else {
+              try {
+                const res  = await fetch(`${API_BASE}/api/games/type/${selected}`);
+                const json = await res.json();
+                filteredGameMatches = json.data || [];
+              } catch (err) {
+                console.error('Failed to fetch games for category:', err);
+                filteredGameMatches = [];
+              }
+            }
+      
+            hideSpinner();
+            showNoResults(filteredGameMatches.length === 0);
+      
+            if (filteredGameMatches.length > 0) {
+              await renderCurrentSearchPage();
+            }
+          });
         });
-    }    
+      }
 
     async function fetchDetailsFor(gamesToLoad) {
         const params = new URLSearchParams();
