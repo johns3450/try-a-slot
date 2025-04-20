@@ -1,38 +1,3 @@
-if (!localStorage.getItem('initialOverlayShown')) {
-    const overlay = document.getElementById('initialOverlay');
-  
-    const loadPromise = new Promise(resolve => {
-      if (document.readyState === 'complete') {
-        resolve();
-      } else {
-        window.addEventListener('load', resolve);
-      }
-    });
-  
-    const logoImg = document.getElementById('logoImg');
-    const logoPromise = logoImg
-      ? (logoImg.complete
-          ? Promise.resolve()
-          : new Promise(res => logoImg.addEventListener('load', res)))
-      : Promise.resolve();
-  
-    const fontPromise = (document.fonts && document.fonts.ready)
-      ? document.fonts.ready
-      : Promise.resolve();
-
-    Promise.all([loadPromise, logoPromise, fontPromise])
-      .then(() => {
-        overlay.classList.add('hidden');
-        overlay.addEventListener('transitionend', () => {
-          overlay.remove();
-          localStorage.setItem('initialOverlayShown', 'true');
-        }, { once: true });
-      });
-  
-  } else {
-    document.getElementById('initialOverlay')?.remove();
-  }
-
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
     const emailModal = document.getElementById('emailModal');
@@ -115,7 +80,6 @@ document.addEventListener('DOMContentLoaded', () => {
           (PRIORITY.includes(c.cca2) ? top : rest).push({ value: c.cca2, label });
         });
       
-        // sort rest by text
         rest.sort((a,b) =>
           a.label.replace(/<[^>]*>/g,'')
             .localeCompare(b.label.replace(/<[^>]*>/g,''))
@@ -229,7 +193,6 @@ document.addEventListener('DOMContentLoaded', () => {
         filteredGameDetails = [];
         await renderCurrentSearchPage();
         showNoResults(allGames.length === 0);
-        // optional: pre‑fetch full list for “all” tab nav
         fetchAllGames();
     } catch (err) {
         console.error('Failed to load local games:', err);
@@ -336,15 +299,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 btn.classList.add('active');
 
                 const selected = btn.getAttribute('data-category');
-                const filtered = selected === 'all'
-                    ? allGames
-                    : allGames.filter(game => (game.type_slug || 'misc') === selected);
+                let filtered;
+                if (selected === 'all') {
+                    filtered = allGames; // Preserve server order with pinned games first
+                } else {
+                    filtered = allGames.filter(game => (game.type_slug || 'misc') === selected);
+                    // Sort by updated_at descending for categories, assuming field exists
+                    filtered.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+                }
+                filteredGameMatches = filtered;
 
                 gamesGrid.innerHTML = '';
                 showNoResults(filtered.length === 0);
                 showSpinner();
                 if (filtered.length > 0) {
-                    filteredGameMatches = filtered;
                     currentSearchPage = 1;
                     filteredGameDetails = [];
                     await renderCurrentSearchPage();
@@ -678,44 +646,3 @@ document.addEventListener('DOMContentLoaded', () => {
     fetchGamesFromLocalAPI();
     fetchCategories();
 });
-
-document.addEventListener('DOMContentLoaded', () => {
-    const footerExpand = document.getElementById('footerExpand');
-    const footerCollapse = document.getElementById('footerCollapse');
-    const footerCollapsed = document.querySelector('.footer-collapsed');
-    const footerExpanded = document.querySelector('.footer-expanded');
-
-    footerExpand.addEventListener('click', (e) => {
-        e.preventDefault();
-        footerCollapsed.style.display = 'none';
-        footerExpanded.style.display = 'block';
-    });
-
-    footerCollapse.addEventListener('click', (e) => {
-        e.preventDefault();
-        footerExpanded.style.display = 'none';
-        footerCollapsed.style.display = 'block';
-    });
-
-    function updateUserProfileVisibility() {
-        if (localStorage.getItem('tryaslot-email')) {
-            document.getElementById('userProfile').style.display = 'block';
-        } else {
-            document.getElementById('userProfile').style.display = 'none';
-        }
-    }
-
-    updateUserProfileVisibility();
-});
-
-if (window.location.pathname === '/' || window.location.pathname === '/index.html') {
-    const btn = document.getElementById('backToTop');
-  
-    window.addEventListener('scroll', () => {
-      btn.classList.toggle('show', window.scrollY > 500);
-    });
-  
-    btn.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  }
