@@ -331,7 +331,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 searchInput.value = '';
                 currentSearchPage = 1;
                 filteredGameDetails = [];
-                filteredGameMatches = [];
     
                 categoryButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
@@ -343,27 +342,31 @@ document.addEventListener('DOMContentLoaded', () => {
                     ? allGames
                     : allGames.filter(game => (game.type_slug || 'misc') === selected);
     
+                // Store this category for later comparison
+                const renderForCategory = currentCategorySlug;
+    
+                filteredGameMatches = filtered;
+                filteredGameDetails = [];
                 gamesGrid.innerHTML = '';
                 showNoResults(filtered.length === 0);
                 showSpinner();
     
                 if (filtered.length > 0) {
-                    const renderForCategory = currentCategorySlug;
-                    filteredGameMatches = filtered;
-                    currentSearchPage = 1;
-                    filteredGameDetails = [];
-    
                     await renderCurrentSearchPage();
     
+                    // If the user clicked another category while we were loading, cancel this render
                     if (currentCategorySlug !== renderForCategory) {
                         gamesGrid.innerHTML = '';
                         loadMoreBtn.style.display = 'none';
                         updateGamesCount(0, 0);
                     }
+                } else {
+                    hideSpinner();
                 }
             });
         });
-    }    
+    }
+    
 
     async function fetchDetailsFor(gamesToLoad) {
         const params = new URLSearchParams();
