@@ -118,6 +118,7 @@ body {
   .categories button {
     background-color: #5ce1e6;
     color: #11151c;
+    font-size: 14px;
     border: none;
     padding: 0.5rem 1rem;
     cursor: pointer;
@@ -128,6 +129,7 @@ body {
     cursor: pointer;
     min-width: calc(97.5px - 0.46833333333rem);
     min-height: 80px;
+    font-weight: 400;
   }
 
   .categories button:hover {
@@ -230,28 +232,33 @@ body {
     }
 }
 
-  .game-card {
+.game-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
     transform: scale(1);
     transition: transform 0.3s ease-in-out;
     cursor: pointer;
   }
-
+  
   .game-card:hover {
     transform: scale(1.05);
     transition: all 0.3s ease-in-out;
-}
-
-.game-card img {
-    max-width: 100%;
-    height: auto;
+  }
+  
+  .game-card img {
+    width: 100%;
+    aspect-ratio: 16 / 9; /* 👈 keep images in a good ratio */
+    object-fit: cover;     /* 👈 prevents stretching while filling */
     border-radius: 4px;
     border: 1px solid #ccc;
     transition: all 0.3s ease-in-out;
   }
-
+  
   .game-card p {
-    display: none;
-  }
+    display: none; /* if you ever want text, make it flex-grow: 1 here */
+  }  
 
   .games-count-container {
     justify-content: center;
@@ -741,14 +748,26 @@ input#captchaInput {
     border-radius: 3px;
   }
 
+  .privacy-page {
+    text-align: center;
+  }
+
+  .privacy-page h1 {
+    margin-block-start: 0em;
+  }
+
+  .privacy-page #userProfile {
+    display: none !important;
+  } 
+
 a.btn.btn-red {
     padding: 0.35rem 0.65rem;
-    background: #ccc;
-    color: #111;
+    background: transparent;
+    color: #fff;
     font-size: small;
     font-weight: 400;
     border-radius: 5px;
-    border: none;
+    border: 1px solid #fff;
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -761,9 +780,9 @@ a {
     color: #ccc;
 }
 
-.privacy-page #userProfile {
-    display: none !important;
-  } 
+ul {
+    list-style-type: none;
+}
 
 #backToTop {
     position: fixed;
@@ -794,4 +813,3 @@ a {
     opacity: 1;
     pointer-events: auto;
   }
-  
