@@ -1,10 +1,11 @@
-const axios = require('axios');
-const cron = require('node-cron');
-const Database = require('better-sqlite3');
-const path = require('path');
-const db = new Database(path.join(__dirname, 'games.db'));
+const axios      = require('axios');
+const cron       = require('node-cron');
+const Database   = require('better-sqlite3');
+const path       = require('path');
+const db         = new Database(path.join(__dirname, 'games.db'));
 db.pragma('journal_mode = WAL');
 
+// ─── SCHEMA ───────────────────────────────────────────────────────────────────
 db.prepare(`
   CREATE TABLE IF NOT EXISTS games (
     id INTEGER PRIMARY KEY,
@@ -30,10 +31,22 @@ db.prepare(`
   )
 `).run();
 
+// ─── UTILS ────────────────────────────────────────────────────────────────────
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
+// Your desired pinned‑IDs, in the exact order you want them to appear:
+const pinnedGameIds = [
+  12643, 359, 17845, 3272, 3311, 1045, 4622, 2570, 1052, 17680,
+  2782, 1873, 761, 2521, 2411, 9914, 4447, 3276, 9759, 1081,
+  2523, 3352, 3959, 1301, 15239, 13092, 893, 9980, 3387, 1850,
+  16678, 1116, 16716, 16630, 13437, 11461, 5483, 9155, 1264, 3672,
+  11466, 2775, 2572, 3328, 5516, 9499, 5397, 1067, 3302, 15961,
+  6416, 1232, 742, 9760, 2781, 1443, 5987, 16711, 10045, 9650
+];
+
+// ─── DATA FETCH & CACHE ───────────────────────────────────────────────────────
 async function fetchGameData() {
   let page = 1, allGames = [];
   while (true) {
@@ -64,17 +77,18 @@ async function updateCache() {
     console.log('🔄 Updating game and type cache...');
     const games = await fetchGameData();
 
+    // clear out old data
     db.prepare('DELETE FROM games').run();
     db.prepare('DELETE FROM types').run();
+    db.prepare('DELETE FROM pinned').run();
 
-    const insertGame = db.prepare(
-      `INSERT INTO games 
-         (id, name, type_slug, thumb, url, updated_at) 
-       VALUES (?, ?, ?, ?, ?, ?)`
-    );
-
+    // insert games
+    const insertGame = db.prepare(`
+      INSERT INTO games (id, name, type_slug, thumb, url, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `);
     const gameTx = db.transaction(games => {
-      games.forEach(g => {
+      for (const g of games) {
         insertGame.run(
           g.id,
           g.name,
@@ -83,74 +97,74 @@ async function updateCache() {
           g.url || '',
           g.updated_at || ''
         );
-      });
+      }
     });
     gameTx(games);
 
-    const counts = {};
-    const names = {};
-
-    games.forEach(g => {
+    // build & insert types counts
+    const counts = {}, names = {};
+    for (const g of games) {
       const slug = g.type_slug || 'misc';
-      const name = g.type || 'Misc';
       counts[slug] = (counts[slug] || 0) + 1;
-      if (!names[slug]) names[slug] = name;
-    });
-
+      if (!names[slug]) names[slug] = g.type || 'Misc';
+    }
     const insertType = db.prepare('INSERT INTO types (slug, name, count) VALUES (?, ?, ?)');
     const typeTx = db.transaction(() => {
-      Object.keys(counts).forEach(slug => {
+      for (const slug of Object.keys(counts)) {
         insertType.run(slug, names[slug], counts[slug]);
-      });
+      }
     });
     typeTx();
 
-    console.log(`✅ Cache updated — ${games.length} games, ${Object.keys(counts).length} types`);
+    // re‑insert your pins in order
+    const insertPinned = db.prepare('INSERT INTO pinned (id) VALUES (?)');
+    const pinTx = db.transaction(() => {
+      for (const id of pinnedGameIds) {
+        insertPinned.run(id);
+      }
+    });
+    pinTx();
+
+    console.log(
+      `✅ Cache updated — ${games.length} games, ` +
+      `${Object.keys(counts).length} types, ` +
+      `${pinnedGameIds.length} pinned`
+    );
   } catch (err) {
     console.error('❌ Cache update failed:', err.message);
   }
 }
 
-const pinnedGameIds = [
-  2782, 1043, 3031, 3179, 2440, 3390, 3021, 2538, 2523, 3264,
-  2572, 2769, 2714, 1078, 2095, 2602, 1095, 1106, 1391, 1045,
-  1036, 1232, 1741, 3055, 2435, 2515, 1332, 3276, 2521, 1459,
-  2130, 2200, 1129, 1052, 2414, 3020, 2633, 1301, 1361, 3030,
-  1155, 1175, 1344, 3185, 3311, 1443, 1346, 1081, 1281, 1067,
-  1452, 1279, 2512, 3115, 3237, 1275, 1132, 1073
-];
-
-const insertPinned = db.prepare('INSERT OR IGNORE INTO pinned (id) VALUES (?)');
-const pinTx = db.transaction(() => {
-  pinnedGameIds.forEach(id => insertPinned.run(id));
-});
-pinTx();
-
+// run on startup and then every day at 00:01
 cron.schedule('1 0 * * *', updateCache);
 updateCache();
 
+// ─── QUERY FUNCTIONS ─────────────────────────────────────────────────────────
 function searchGames(query) {
   if (!query) {
+    // your “search” UI can still list all by date if they hit Search with no input
     return db.prepare('SELECT * FROM games ORDER BY updated_at DESC').all();
   }
-
-  return db.prepare('SELECT * FROM games WHERE lower(name) LIKE ? ORDER BY updated_at DESC').all(`%${query.toLowerCase()}%`);
+  return db.prepare(
+    'SELECT * FROM games WHERE lower(name) LIKE ? ORDER BY updated_at DESC'
+  ).all(`%${query.toLowerCase()}%`);
 }
 
 function getAllGames(limit, offset) {
-  const pinned = pinnedGameIds.map(id => `'${id}'`).join(',');
-  const base = `
-    SELECT * FROM games
-    ORDER BY
-      CASE WHEN id IN (${pinned}) THEN 0 ELSE 1 END,
-      updated_at DESC
+  // “Hot/All” screen: pinned first, in YOUR order, then newest
+  const sql = `
+    SELECT g.*
+      FROM games g
+      LEFT JOIN pinned p
+        ON g.id = p.id
+     ORDER BY
+       CASE WHEN p.id IS NOT NULL THEN 0 ELSE 1 END,
+       g.updated_at DESC
   `;
-
-  if (typeof limit !== 'undefined' && typeof offset !== 'undefined') {
-    return db.prepare(`${base} LIMIT ? OFFSET ?`).all(limit, offset);
+  if (limit != null && offset != null) {
+    return db.prepare(`${sql} LIMIT ? OFFSET ?`).all(limit, offset);
   }
-
-  return db.prepare(base).all();
+  return db.prepare(sql).all();
 }
 
 function getTypes() {
@@ -159,6 +173,6 @@ function getTypes() {
 
 module.exports = {
   searchGames,
-  getTypes,
-  getAllGames
+  getAllGames,
+  getTypes
 };
