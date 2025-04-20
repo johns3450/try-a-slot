@@ -359,7 +359,8 @@ document.addEventListener('DOMContentLoaded', () => {
         gamesToLoad.forEach(g => params.append('id[]', g.id));
         const res = await fetch(`https://slotslaunch.com/api/games?${params}`);
         const json = await res.json();
-        return json.data || [];
+        const detailsMap = new Map(json.data.map(d => [d.id, d]));
+        return gamesToLoad.map(g => detailsMap.get(g.id)).filter(d => d !== undefined);
     }
 
     async function renderCurrentSearchPage(loadMore = false) {
