@@ -152,19 +152,20 @@ app.post('/api/check-verification', (req, res) => {
   }
 });
 
-// Dummy /api/verify endpoint to simulate verification
 app.get('/api/verify', (req, res) => {
-  const { email } = req.query;
-  if (!email) return res.status(400).send('Email parameter is required.');
-
-  let users = loadUsers();
-  const userIndex = users.findIndex(u => u.email === email);
-  if (userIndex === -1) return res.send('User not found.');
-
-  users[userIndex].verified = true;
-  saveUsers(users);
-  res.send('Email verified! You can now close this window.');
-});
+    const { email } = req.query;
+    if (!email) return res.status(400).send('Email parameter is required.');
+  
+    let users = loadUsers();
+    const userIndex = users.findIndex(u => u.email === email);
+    if (userIndex === -1) return res.send('User not found.');
+  
+    users[userIndex].verified = true;
+    saveUsers(users);
+  
+    // ✅ Serve the custom page
+    res.sendFile(path.join(__dirname, 'public/verified.html'));
+  });  
 
 // --- EXISTING ENDPOINTS BELOW ---
 
