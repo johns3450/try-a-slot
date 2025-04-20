@@ -1,3 +1,38 @@
+if (!localStorage.getItem('initialOverlayShown')) {
+    const overlay = document.getElementById('initialOverlay');
+  
+    const loadPromise = new Promise(resolve => {
+      if (document.readyState === 'complete') {
+        resolve();
+      } else {
+        window.addEventListener('load', resolve);
+      }
+    });
+  
+    const logoImg = document.getElementById('logoImg');
+    const logoPromise = logoImg
+      ? (logoImg.complete
+          ? Promise.resolve()
+          : new Promise(res => logoImg.addEventListener('load', res)))
+      : Promise.resolve();
+  
+    const fontPromise = (document.fonts && document.fonts.ready)
+      ? document.fonts.ready
+      : Promise.resolve();
+
+    Promise.all([loadPromise, logoPromise, fontPromise])
+      .then(() => {
+        overlay.classList.add('hidden');
+        overlay.addEventListener('transitionend', () => {
+          overlay.remove();
+          localStorage.setItem('initialOverlayShown', 'true');
+        }, { once: true });
+      });
+  
+  } else {
+    document.getElementById('initialOverlay')?.remove();
+  }
+
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
     const emailModal = document.getElementById('emailModal');

@@ -690,8 +690,20 @@ input#captchaInput {
   }
 
   #logoutBtn {
+    appearance: none;
+    -webkit-appearance: none;
+    background: none;
+    border: none;
     padding: 0.5rem 1rem;
     cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #ccc;
+    border-radius: 0.25rem;
+    background-color: #f9f9f9;
+    font-size: 1rem;
+    color: #111;
   }
   
   #gameOverlay {
@@ -721,14 +733,22 @@ input#captchaInput {
     position: absolute;
     top: 15px;
     right: 10px;
+    width: 2rem;
+    height: 2rem;
+    padding: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     background: #fff;
     border: none;
     color: #111;
     font-size: 1.5rem;
     cursor: pointer;
     z-index: 10000;
-    border-radius: 100%;
-    opacity: 80%;
+    border-radius: 50%;
+    opacity: 0.8;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   iframe {
@@ -793,13 +813,11 @@ ul {
     height: 3rem;
     text-align: center;
     font-size: 1.5rem;
-  
     background: rgba(204,204,204,0.975);
     color: #111;
     border: none;
     border-radius: 50%;
     cursor: pointer;
-  
     transition: opacity 0.3s ease;
     z-index: 100;
   }
