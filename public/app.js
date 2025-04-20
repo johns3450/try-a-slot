@@ -302,7 +302,7 @@ document.addEventListener('DOMContentLoaded', () => {
             categoryBar.innerHTML = `
                 <button data-category="all" class="active">
                     <i class="fi fi-rr-flame" style="display: block; margin: 0 auto 5px; font-size:20px; color: #eb2f06;"></i>
-                    <span>Latest</span>
+                    <span>Hot</span>
                 </button>
             `;
             filteredCategories.forEach(cat => {
@@ -321,34 +321,49 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    let currentCategorySlug = 'all';
+
     function setupCategoryListeners() {
         const categoryButtons = categoryBar.querySelectorAll('button');
+    
         categoryButtons.forEach(btn => {
             btn.addEventListener('click', async () => {
                 searchInput.value = '';
                 currentSearchPage = 1;
                 filteredGameDetails = [];
                 filteredGameMatches = [];
+    
                 categoryButtons.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
-
+    
                 const selected = btn.getAttribute('data-category');
+                currentCategorySlug = selected;
+    
                 const filtered = selected === 'all'
                     ? allGames
                     : allGames.filter(game => (game.type_slug || 'misc') === selected);
-
+    
                 gamesGrid.innerHTML = '';
                 showNoResults(filtered.length === 0);
                 showSpinner();
+    
                 if (filtered.length > 0) {
+                    const renderForCategory = currentCategorySlug;
                     filteredGameMatches = filtered;
                     currentSearchPage = 1;
                     filteredGameDetails = [];
+    
                     await renderCurrentSearchPage();
+    
+                    if (currentCategorySlug !== renderForCategory) {
+                        gamesGrid.innerHTML = '';
+                        loadMoreBtn.style.display = 'none';
+                        updateGamesCount(0, 0);
+                    }
                 }
             });
         });
-    }
+    }    
 
     async function fetchDetailsFor(gamesToLoad) {
         const params = new URLSearchParams();
@@ -715,4 +730,3 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
-  

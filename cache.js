@@ -24,6 +24,13 @@ db.prepare(`
   )
 `).run();
 
+db.prepare(`
+    CREATE TABLE IF NOT EXISTS pinned (
+      id INTEGER PRIMARY KEY
+    )
+  `).run();
+  
+
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
@@ -106,6 +113,22 @@ typeTx();
   }
 }
 
+const pinnedGameIds = [
+    2782, 1043, 3031, 3179, 2440, 3390, 3021, 2538, 2523, 3264,
+    2572, 2769, 2714, 1078, 2095, 2602, 1095, 1106, 1391, 1045,
+    1036, 1232, 1741, 3055, 2435, 2515, 1332, 3276, 2521, 1459,
+    2130, 2200, 1129, 1052, 2414, 3020, 2633, 1301, 1361, 3030,
+    1155, 1175, 1344, 3185, 3311, 1443, 1346, 1081, 1281, 1067,
+    1452, 1279, 2512, 3115, 3237, 1275, 1132, 1073
+  ];
+  
+  const insertPinned = db.prepare('INSERT OR IGNORE INTO pinned (id) VALUES (?)');
+  const pinTx = db.transaction(() => {
+    pinnedGameIds.forEach(id => insertPinned.run(id));
+  });
+  pinTx();
+  
+
 cron.schedule('1 0 * * *', updateCache);
 updateCache();
 
@@ -124,16 +147,18 @@ function searchGames(query) {
   }
   
   function getAllGames(limit, offset) {
-    const base = 'SELECT * FROM games ORDER BY updated_at DESC';
+    const base = `
+      SELECT * FROM games
+      LEFT JOIN pinned ON games.id = pinned.id
+      ORDER BY pinned.id DESC, updated_at DESC
+    `;
   
     if (typeof limit !== 'undefined' && typeof offset !== 'undefined') {
-      return db
-        .prepare(`${base} LIMIT ? OFFSET ?`)
-        .all(limit, offset);
+      return db.prepare(`${base} LIMIT ? OFFSET ?`).all(limit, offset);
     }
   
     return db.prepare(base).all();
-  }
+  }  
   
   function getTypes() {
     return db
@@ -146,4 +171,3 @@ function searchGames(query) {
     getTypes,
     getAllGames
   };
-  
