@@ -107,7 +107,7 @@ app.post('/api/register', (req, res) => {
         </div>
         <div style="background-color: #f2f2f2; padding: 40px;">
           <div style="max-width: 600px; margin: 0 auto; background-color: #fff; padding: 20px; border-radius: 8px; text-align: center; font-family: Arial, sans-serif; font-size: 14px; color: #333;">
-            <img src="https://yourdomain.com/assets/logo.png" alt="TRY'A'SLOT" style="max-width: 200px; margin: 0 auto 20px; display: block;">
+            <img src="https://tryaslot.com/assets/logo.png" alt="TRY'A'SLOT" style="max-width: 200px; margin: 0 auto 20px; display: block;">
             <h2>Verify Your Email</h2>
             <p>Hello,</p>
             <p>Please verify your email for <strong>TRY'A'SLOT</strong> by clicking the button below:</p>

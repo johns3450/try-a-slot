@@ -569,11 +569,11 @@ document.addEventListener('DOMContentLoaded', () => {
         pendingEmail = email;
       
         try {
-          const res = await fetch('/api/login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email })
-          });
+            const res = await fetch(`${API_BASE}/api/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email })
+              });
           const data = await res.json();
       
           if (data.status === 'verified') {
@@ -617,11 +617,11 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log('Sending /api/register payload:', payload);
     
         try {
-            const res = await fetch('/api/register', {
+            const res = await fetch(`${API_BASE}/api/register`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            });
+              });              
             const data = await res.json();
     
             if (data.success) {
@@ -653,11 +653,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         try {
-            const res = await fetch('/api/check-verification', {
+            const res = await fetch(`${API_BASE}/api/check-verification`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
-            });
+              });              
             const data = await res.json();
 
             if (data.verified) {
