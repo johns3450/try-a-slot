@@ -5,7 +5,6 @@ const path = require('path');
 const db = new Database(path.join(__dirname, 'games.db'));
 db.pragma('journal_mode = WAL');
 
-// Create tables
 db.prepare(`
   CREATE TABLE IF NOT EXISTS games (
     id INTEGER PRIMARY KEY,
@@ -62,8 +61,6 @@ async function updateCache() {
     db.prepare('DELETE FROM games').run();
     db.prepare('DELETE FROM types').run();
 
-    // Insert games
-    // adjust your INSERT statement to include updated_at
 const insertGame = db.prepare(
   `INSERT INTO games 
      (id, name, type_slug, thumb, url, updated_at) 
@@ -78,14 +75,12 @@ const gameTx = db.transaction(games => {
       g.type_slug || 'misc',
       g.thumb || '',
       g.url || '',
-      g.updated_at || ''        // ← pull from API response
+      g.updated_at || ''
     );
   });
 });
 gameTx(games);
 
-
-    // Count types and map names from game data
 const counts = {};
 const names = {};
 
@@ -96,7 +91,6 @@ games.forEach(g => {
   if (!names[slug]) names[slug] = name;
 });
 
-// Insert all types regardless of count
 const insertType = db.prepare('INSERT INTO types (slug, name, count) VALUES (?, ?, ?)');
 const typeTx = db.transaction(() => {
   Object.keys(counts).forEach(slug => {
@@ -112,11 +106,9 @@ typeTx();
   }
 }
 
-// Daily schedule
 cron.schedule('1 0 * * *', updateCache);
 updateCache();
 
-// Exported methods
 function searchGames(query) {
     if (!query) {
       return db

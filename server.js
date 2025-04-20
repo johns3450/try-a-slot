@@ -12,17 +12,15 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 const USERS_FILE = path.join(__dirname, 'users.json');
 
-const { searchGames, getTypes, getAllGames } = require('./cache'); // ✅ Updated import
+const { searchGames, getTypes, getAllGames } = require('./cache');
 
 app.use(cors({
     origin: 'https://tryaslot.com'
   }));
 
-// SendGrid setup
 const sgMail = require('@sendgrid/mail');
 sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
-// Middleware
 app.use(bodyParser.json());
 app.use(express.static('public'));
 
@@ -43,7 +41,7 @@ function saveUsers(users) {
   fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 
-// Updated /api/login endpoint
+// Login
 app.post('/api/login', (req, res) => {
   try {
     const { email } = req.body;
@@ -59,7 +57,6 @@ app.post('/api/login', (req, res) => {
         return res.json({ status: 'pending' });
       }
     } else {
-      // New email – trigger registration
       return res.json({ status: 'new' });
     }
   } catch (err) {
@@ -68,7 +65,7 @@ app.post('/api/login', (req, res) => {
   }
 });
 
-// New /api/register endpoint
+// Register
 app.post('/api/register', (req, res) => {
   try {
     const { email, country, captcha } = req.body;
@@ -76,7 +73,7 @@ app.post('/api/register', (req, res) => {
       return res.status(400).json({ success: false, message: 'Missing fields.' });
     }
 
-    // Dummy captcha check; in production use real captcha verification
+    // Dummy captcha check
     if (captcha !== 'ABC123') {
       return res.status(400).json({ success: false, message: 'Captcha incorrect.' });
     }
@@ -87,15 +84,15 @@ app.post('/api/register', (req, res) => {
       return res.status(400).json({ success: false, message: 'User already exists.' });
     }
 
-    // Create new user record with verified set to false.
+    // Create new user record with verified set to false
     const newUser = { email, country, verified: false };
     users.push(newUser);
     saveUsers(users);
 
-    // Create the verification URL.
+    // Create the verification URL
     const verificationUrl = `${BASE_URL}/api/verify?email=${encodeURIComponent(email)}`;
 
-    // Prepare SendGrid message.
+    // Prepare SendGrid message
     const msg = {
       to: email,
       from: { email: process.env.SENDER_EMAIL, name: "TRY'A'SLOT" },
@@ -133,7 +130,7 @@ app.post('/api/register', (req, res) => {
   }
 });
 
-// New /api/check-verification endpoint
+// Check verification
 app.post('/api/check-verification', (req, res) => {
   try {
     const { email } = req.body;
@@ -152,6 +149,7 @@ app.post('/api/check-verification', (req, res) => {
   }
 });
 
+// Email verification
 app.get('/api/verify', (req, res) => {
     const { email } = req.query;
     if (!email) return res.status(400).send('Email parameter is required.');
@@ -162,12 +160,9 @@ app.get('/api/verify', (req, res) => {
   
     users[userIndex].verified = true;
     saveUsers(users);
-  
-    // ✅ Serve the custom page
+
     res.sendFile(path.join(__dirname, 'public/verified.html'));
   });  
-
-// --- EXISTING ENDPOINTS BELOW ---
 
 // Search API
 app.get('/api/search', (req, res) => {

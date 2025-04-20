@@ -17,10 +17,9 @@ body {
     z-index: 9999;
     opacity: 1;
     transition: opacity 0.5s ease;
-    pointer-events: none;  /* so it doesn’t block any clicks if scripts run early */
+    pointer-events: none;
   }
   
-  /* once we add .hidden, it will fade out */
   #initialOverlay.hidden {
     opacity: 0;
   }
@@ -77,10 +76,10 @@ body {
 
   .header-actions {
     position: absolute;
-    right: 1rem;             /* distance from right edge */
+    right: 1rem;
     display: flex;
     align-items: center;
-    gap: 0.5rem;             /* space between buttons/icons */
+    gap: 0.5rem;
   }
 
   .intro-text {
@@ -99,7 +98,7 @@ body {
   
   .content-wrapper {
     max-width: 1200px;
-    margin: 80px auto 0; /* centers the container */
+    margin: 80px auto 0;
     padding: 0 0 4rem;
   }
   
@@ -108,8 +107,8 @@ body {
     padding: 0.5rem 1rem;
     gap: 0.5rem;
     overflow-x: auto;
-    -ms-overflow-style: none;  /* For Internet Explorer and Edge */
-    scrollbar-width: none;  /* For Firefox */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
   }
 
   .categories::-webkit-scrollbar {
@@ -125,7 +124,7 @@ body {
     border-radius: 5px;
     white-space: nowrap;
     transform: scale(1);
-    transition: transform 0.3s ease-in-out; /* or all 0.3s ease-in-out */
+    transition: transform 0.3s ease-in-out;
     cursor: pointer;
     min-width: calc(97.5px - 0.46833333333rem);
     min-height: 80px;
@@ -146,13 +145,13 @@ body {
   }
 
   .search-bar-container {
-    position: relative;    /* so we can absolutely position the icon */
-    margin: 0rem auto 1rem;     /* center horizontally, spacing above/below */
+    position: relative;
+    margin: 0rem auto 1rem;
   }
   
   #searchInput {
     width: 100%;
-    padding: 0.5rem 3rem 0.5rem 0.75rem; /* extra right padding for icon */
+    padding: 0.5rem 3rem 0.5rem 0.75rem;
     border-radius: 4px;
     border: 1px solid #555;
     background-color: transparent;
@@ -161,7 +160,6 @@ body {
     outline: none;
   }
   
-  /* Style the placeholder text */
   #searchInput::placeholder {
     color: #888;
   }
@@ -174,7 +172,6 @@ body {
     border: 1px solid #ffffff;
   }
   
-  /* The icon at the inside right */
   .search-icon {
     position: absolute;
     cursor: pointer;
@@ -235,7 +232,7 @@ body {
 
   .game-card {
     transform: scale(1);
-    transition: transform 0.3s ease-in-out; /* or all 0.3s ease-in-out */
+    transition: transform 0.3s ease-in-out;
     cursor: pointer;
   }
 
@@ -341,6 +338,11 @@ text-align: center;
     text-decoration: none;
   }
 
+
+
+
+
+
   .modal.hidden {
     display: none;
   }
@@ -359,18 +361,6 @@ text-align: center;
     padding: 0.5rem;
   }
   
-  .email-modal-content {
-    color: #111;
-    background: #fff;
-    padding: 20px 30px;
-    border-radius: 5px;
-    position: relative;
-    text-align: center;
-    max-width: 300px;
-    width: 90%;
-    box-shadow: 0px 0px 10px #fff;
-  }
-  
   .modal-content input {
     padding: 0.5rem;
     width: 80%;
@@ -386,11 +376,21 @@ text-align: center;
     cursor: pointer;
   }
 
-
-
   .modal-body h2 {
     margin-block-end: 1rem;
 }
+
+.email-modal-content {
+    color: #111;
+    background: #fff;
+    padding: 20px 30px;
+    border-radius: 5px;
+    position: relative;
+    text-align: center;
+    max-width: 300px;
+    width: 90%;
+    box-shadow: 0px 0px 10px #fff;
+  }
 
 input#userEmail {
     width: 100%;
@@ -497,10 +497,9 @@ input#userEmail {
       box-shadow: 0px 0px 15px 0px rgba(235, 47, 6, 0.5) !important;
     }
 
-/* 1) Animate the dropdown open/closed */
 .choices__list--dropdown {
     max-height: clamp(100px, 25vh, 350px);
-    overflow-y: auto;     /* allow scrolling once it exceeds the max-height */
+    overflow-y: auto;
     transform-origin: top center;
     transform: scaleY(0);
     transition: transform 0.3s ease;
@@ -523,12 +522,10 @@ input#userEmail {
   border: none !important;
 }
 
-/* then put the top border back */
 .choices__list--dropdown[aria-expanded="true"] {
   border-top: 1px solid #ddd !important;
 }
   
-  /* 2) Style each choice row */
   .choices__list--dropdown .choices__item--choice {
     padding: 1rem 1.25rem;
   }
@@ -539,17 +536,14 @@ input#userEmail {
     background-color: #ffffff;
   }
   
-  /* 3) Always hide the “placeholder” inside the dropdown list itself */
   .choices__list--dropdown .choices__placeholder {
     display: none !important;
   }
   
-  /* 4) Hide the input’s placeholder once a real value is chosen */
   .choices.has-value .choices__inner .choices__placeholder {
     display: none !important;
   }
   
-  /* 5) Tidy up margin under the select‑one inputs */
   .choices[data-type="select-one"] {
     margin-bottom: 1rem;
     border-radius: 3px;
@@ -566,7 +560,6 @@ input#userEmail {
     height: 40px;
   }
 
-/* Style the selected item in the input */
 .choices__inner {
     padding: 0.5rem;
     border: none !important;
@@ -586,6 +579,66 @@ input#userEmail {
     vertical-align: middle;
     border-radius: 2px;
   }
+
+  .captcha-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 10px auto;
+    width: fit-content;
+    position: relative;
+}
+
+#captchaCanvas {
+    border: 1px solid #ccc;
+    background: #f0f0f0;
+}
+
+#refreshCaptcha {
+    position: absolute;
+    top: 50%;
+    left: 90%;
+    transform: translate(-50%, -50%);
+    font-size: 20px;
+    color: #007bff;
+    border: none;
+    cursor: pointer;
+    background: none;
+}
+
+input#captchaInput {
+    width: 100%;
+    box-sizing: border-box;
+    height: 30px;
+    font-size: 16px;
+    padding: 0.5rem;
+    margin-top: 0.5rem;
+    margin-bottom: 1rem;
+    border-radius: 3px;
+    border: 1px solid rgb(118, 118, 118);
+    outline: none;
+}
+
+.modal-footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.error-message {
+    font-size: 12px;
+    color: #ff0000;
+    margin-top: 1rem;
+    text-align: center;
+    min-height: 14px;
+    display: none;
+    width: 100%;
+}
+
+.error-message.show {
+    display: block;
+}
 
   .profile-modal {
     position: fixed;
@@ -639,14 +692,13 @@ input#userEmail {
     cursor: pointer;
   }
   
-  /* Fullscreen overlay */
   #gameOverlay {
     position: fixed;
     top: 0px;
     left: 0px;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.85); /* dark semi-transparent overlay */
+    background-color: rgba(0, 0, 0, 0.85);
     z-index: 9999;
     display: flex;
     align-items: center;
@@ -657,15 +709,12 @@ input#userEmail {
     display: none !important;
   }
   
-  
-  /* Container for the embedded game iframe */
   #yourGameContainer {
     width: 100%;
     height: 100%;
     position: relative;
   }
   
-  /* Close button styling */
   .close-button {
     position: absolute;
     top: 15px;
@@ -684,7 +733,6 @@ input#userEmail {
     border: none;
   }
   
-  /* Scrollbar styling for categories if needed */
   .categories::-webkit-scrollbar {
     height: 6px;
   }
@@ -692,67 +740,6 @@ input#userEmail {
     background: #444;
     border-radius: 3px;
   }
-  
-
-  .captcha-container {
-    display: flex;
-    align-items: center;
-    justify-content: center; /* Center contents horizontally */
-    gap: 10px;
-    margin: 10px auto; /* Center container in parent */
-    width: fit-content; /* Shrink-wrap content for centering */
-    position: relative; /* Create positioning context for absolute child */
-}
-
-#captchaCanvas {
-    border: 1px solid #ccc;
-    background: #f0f0f0;
-}
-
-#refreshCaptcha {
-    position: absolute; /* Position over canvas */
-    top: 50%; /* Center vertically */
-    left: 90%; /* Center horizontally */
-    transform: translate(-50%, -50%); /* Offset to true center */
-    font-size: 20px;
-    color: #007bff;
-    border: none;
-    cursor: pointer;
-    background: none;
-}
-
-input#captchaInput {
-    width: 100%;
-    box-sizing: border-box;
-    height: 30px;
-    font-size: 16px;
-    padding: 0.5rem;
-    margin-top: 0.5rem; /* Space below captcha-container */
-    margin-bottom: 1rem;
-    border-radius: 3px;
-    border: 1px solid rgb(118, 118, 118);
-    outline: none;
-}
-
-.modal-footer {
-    display: flex;
-    flex-direction: column; /* Stack button and error vertically */
-    align-items: center; /* Center horizontally */
-}
-
-.error-message {
-    font-size: 12px;
-    color: #ff0000;
-    margin-top: 1rem;
-    text-align: center;
-    min-height: 14px;
-    display: none;
-    width: 100%; /* Full width to avoid flex shrinkage */
-}
-
-.error-message.show {
-    display: block;
-}
 
 a.btn.btn-red {
     padding: 0.35rem 0.65rem;
@@ -774,28 +761,26 @@ a {
     color: #ccc;
 }
 
+.privacy-page #userProfile {
+    display: none !important;
+  } 
+
 #backToTop {
     position: fixed;
-    bottom: 4rem;
-    right: 1.5rem;
-  
-    /* center contents */
+    bottom: 4.5rem;
+    right: 1rem;
     display: grid;
     place-items: center;
     align-items: center;
     justify-content: center;
-  
-    /* always present, but invisible/non‑interactive by default */
     opacity: 0;
     pointer-events: none;
-  
     width: 3rem;
     height: 3rem;
-    /* you can drop line-height now since flex is handling centering */
     text-align: center;
     font-size: 1.5rem;
   
-    background: rgba(204,204,204,0.95);
+    background: rgba(204,204,204,0.975);
     color: #111;
     border: none;
     border-radius: 50%;
@@ -809,10 +794,4 @@ a {
     opacity: 1;
     pointer-events: auto;
   }
-
-  .privacy-page #userProfile {
-    display: none !important;
-  }
-  
-  
   

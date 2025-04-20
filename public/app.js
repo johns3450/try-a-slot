@@ -1,10 +1,6 @@
-// one‑time initial overlay logic
 if (!localStorage.getItem('initialOverlayShown')) {
     const overlay = document.getElementById('initialOverlay');
   
-    // 1) Prepare promises for each thing you want to wait for:
-  
-    // – window.load (all images/css etc)
     const loadPromise = new Promise(resolve => {
       if (document.readyState === 'complete') {
         resolve();
@@ -13,7 +9,6 @@ if (!localStorage.getItem('initialOverlayShown')) {
       }
     });
   
-    // – your logo image (give it id="logoImg" in your markup)
     const logoImg = document.getElementById('logoImg');
     const logoPromise = logoImg
       ? (logoImg.complete
@@ -21,15 +16,12 @@ if (!localStorage.getItem('initialOverlayShown')) {
           : new Promise(res => logoImg.addEventListener('load', res)))
       : Promise.resolve();
   
-    // – any webfonts (so your site text doesn’t flash‑in)
     const fontPromise = (document.fonts && document.fonts.ready)
       ? document.fonts.ready
       : Promise.resolve();
-  
-    // 2) When all of them are done, fade and remove the overlay
+
     Promise.all([loadPromise, logoPromise, fontPromise])
       .then(() => {
-        // trigger CSS fade‑out
         overlay.classList.add('hidden');
         overlay.addEventListener('transitionend', () => {
           overlay.remove();
@@ -38,7 +30,6 @@ if (!localStorage.getItem('initialOverlayShown')) {
       });
   
   } else {
-    // already seen? just zap it immediately
     document.getElementById('initialOverlay')?.remove();
   }
 
@@ -71,9 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentSearchPage = 1;
     let totalGamesCount = 0;
 
-    // Function to show/clear error messages
     function showError(message) {
-        // find the active panel
         const panel = document.querySelector('#emailModal .email-modal-content > div:not(.hidden)');
         if (!panel) return console.error('No active panel!');
         
@@ -89,7 +78,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-          // allow Enter/Return in the email field to trigger the same click as #emailSubmit
     const userEmailField = document.getElementById('userEmail');
     userEmailField.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
@@ -98,7 +86,6 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
 
-    // allow Enter/Return in the captcha field to trigger the same click as #registerSubmit
     const captchaField = document.getElementById('captchaInput');
     captchaField.addEventListener('keydown', e => {
       if (e.key === 'Enter') {
@@ -123,7 +110,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const PRIORITY = ['GB','US'];
         const top = [], rest = [];
       
-        // bucket priority vs rest
         list.forEach(c => {
           const label = `<img class="flag-icon" src="${c.flags.png}" /> ${c.name.common}`;
           (PRIORITY.includes(c.cca2) ? top : rest).push({ value: c.cca2, label });
@@ -159,7 +145,6 @@ document.addEventListener('DOMContentLoaded', () => {
           itemSelectText: ''
         });
       
-        // once a real country is picked, hide the placeholder via .has-value
         countrySelect.addEventListener('change', () => {
           if (countrySelect.value) {
             countryChoice.setChoiceByValue(countrySelect.value);
@@ -167,10 +152,6 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
       }
-      
-      
-      
-      
 
     function generateCaptchaText() {
         const chars = 'ABCDEFGHJKMNPRSTUVWXYZabcdefghjkmnprstuvwxyz';
@@ -509,7 +490,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function showModal(stateId) {
-        // Clear error message when showing modal
         showError('');
         document.querySelectorAll('#emailModal .email-modal-content > div')
             .forEach(el => el.classList.add('hidden'));
@@ -523,7 +503,6 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function hideModal() {
-        // Clear error message when hiding modal
         showError('');
         document.getElementById('emailModal').classList.add('hidden');
     }
@@ -546,26 +525,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('emailSubmit').addEventListener('click', async () => {
-        // Clear any prior error
         showError('');
       
-        // 1) Grab + trim
         const email = document.getElementById('userEmail').value.trim();
       
-        // 2) Empty check
         if (!email) {
           showError('Please enter your email address.');
           return;
         }
       
-        // 3) Basic format check
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(email)) {
           showError('Invalid email address. Please try again.');
           return;
         }
       
-        // 4) Passed validation—store and proceed
         pendingEmail = email;
       
         try {
@@ -594,7 +568,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
 
     document.getElementById('registerSubmit').addEventListener('click', async () => {
-        // Clear previous error only at the start
+
         showError('', 'registerSubmit-start');
     
         const email = pendingEmail;
@@ -636,14 +610,14 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('refreshCaptcha')?.addEventListener('click', () => {
-        // Clear error on captcha refresh
+
         showError('');
         renderCaptcha();
         document.getElementById('captchaInput').value = '';
     });
 
     document.getElementById('verificationDone').addEventListener('click', async () => {
-        // Clear previous error
+
         showError('');
 
         const email = pendingEmail || document.getElementById('userEmail').value.trim();
@@ -741,5 +715,4 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
   }
-  
   
