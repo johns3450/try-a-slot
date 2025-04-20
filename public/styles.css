@@ -184,6 +184,8 @@ body {
     color: #fff;
     background: transparent;
     border: none;
+    appearance: none;
+    -webkit-appearance: none;
   }
 
   div#noResultsMessage {
@@ -733,19 +735,13 @@ input#captchaInput {
     position: absolute;
     top: 15px;
     right: 10px;
-  
     width: 2rem;
     height: 2rem;
     padding: 0;
-    
-    /* use flex (not inline‑flex) to avoid Safari baseline quirks */
     display: flex;
     align-items: center;
     justify-content: center;
-  
-    /* make text vertically centered as well */
     line-height: 2rem;
-  
     background: #fff;
     border: none;
     color: #111;
