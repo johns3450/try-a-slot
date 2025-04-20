@@ -12,7 +12,12 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 const USERS_FILE = path.join(__dirname, 'users.json');
 
-const { searchGames, getTypes, getAllGames } = require('./cache');
+const {
+    searchGames,
+    getTypes,
+    getAllGames,
+    getGamesByType
+  } = require('./cache');
 
 app.use(cors({
     origin: 'https://tryaslot.com'
@@ -164,36 +169,47 @@ app.get('/api/verify', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/verified.html'));
   });  
 
-// Search API
+// Search API (most‐recent‐first, no pins)
 app.get('/api/search', (req, res) => {
-  const query = req.query.q || '';
-  console.log(`Search endpoint received query: "${query}"`);
-  const results = searchGames(query);
-  console.log(`Search returning ${results.length} records.`);
-  res.json({ data: results });
-});
-
-// Categories/types API
-app.get('/api/types', (req, res) => {
-  try {
-    const types = getTypes();
-    res.json({ data: types });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch types' });
-  }
-});
-
-// All games API from local cache
-app.get('/api/games', (req, res) => {
-  try {
-    const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
+    const q       = req.query.q || '';
+    const results = searchGames(q);
+    res.json({ data: results });
+  });
+  
+  // Types API
+  app.get('/api/types', (req, res) => {
+    try {
+      const types = getTypes();
+      res.json({ data: types });
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch types' });
+    }
+  });
+  
+  // Category API (most-recent‐first, no pins)
+  app.get('/api/games/type/:slug', (req, res) => {
+    const slug   = req.params.slug;
+    const limit  = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
     const offset = req.query.offset ? parseInt(req.query.offset, 10) : undefined;
-    const games = getAllGames(limit, offset);
-    res.json({ data: games });
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to fetch games' });
-  }
-});
+    try {
+      const games = getGamesByType(slug, limit, offset);
+      res.json({ data: games });
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch games for category' });
+    }
+  });
+  
+  // Hot/All games API (pins + recent)
+  app.get('/api/games', (req, res) => {
+    try {
+      const limit  = req.query.limit  ? parseInt(req.query.limit, 10)  : undefined;
+      const offset = req.query.offset ? parseInt(req.query.offset, 10) : undefined;
+      const games  = getAllGames(limit, offset);
+      res.json({ data: games });
+    } catch (err) {
+      res.status(500).json({ error: 'Failed to fetch games' });
+    }
+  });
 
 // Start server
 app.listen(PORT, () => {

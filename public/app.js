@@ -218,43 +218,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function fetchGamesFromLocalAPI() {
-        try {
-            const initialRes = await fetch(`${API_BASE}/api/games?limit=${perPage}&offset=0&order=asc&order_by=name`);
-            const initialJson = await initialRes.json();
-            totalGamesCount = initialJson.meta ? initialJson.meta.total : initialJson.data.length;
-            allGames = initialJson.data || [];
-            filteredGameMatches = allGames;
-            currentSearchPage = 1;
-            filteredGameDetails = [];
-            await renderCurrentSearchPage();
-            showNoResults(allGames.length === 0);
-            fetchAllGames();
-        } catch (err) {
-            console.error('Failed to load local games:', err);
-        }
-    }
-
-    async function fetchAllGames() {
-        try {
-            const res = await fetch(`${API_BASE}/api/games`);
-            const json = await res.json();
-            if (json.data && json.data.length > allGames.length) {
-                allGames = json.data;
-                totalGamesCount = allGames.length;
-                const isAllActive = document.querySelector('button[data-category="all"].active');
-                if (isAllActive) {
-                    filteredGameMatches = allGames;
-                    updateGamesCount(filteredGameDetails.length, filteredGameMatches.length);
-                    const moreResults = currentSearchPage * perPage < filteredGameMatches.length;
-                    loadMoreBtn.style.display = moreResults ? 'block' : 'none';
-                }
-            }
-        } catch (err) {
-            console.error('Failed to load full dataset:', err);
-        }
-    }
-
     async function fetchCategories() {
         try {
             const res = await fetch(`${API_BASE}/api/types`);
@@ -323,50 +286,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentCategorySlug = 'all';
 
-    function setupCategoryListeners() {
-        const categoryButtons = categoryBar.querySelectorAll('button');
-    
-        categoryButtons.forEach(btn => {
-            btn.addEventListener('click', async () => {
-                searchInput.value = '';
-                currentSearchPage = 1;
-                filteredGameDetails = [];
-    
-                categoryButtons.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-    
-                const selected = btn.getAttribute('data-category');
-                currentCategorySlug = selected;
-    
-                const filtered = selected === 'all'
-                    ? allGames
-                    : allGames.filter(game => (game.type_slug || 'misc') === selected);
-    
-                // Store this category for later comparison
-                const renderForCategory = currentCategorySlug;
-    
-                filteredGameMatches = filtered;
-                filteredGameDetails = [];
-                gamesGrid.innerHTML = '';
-                showNoResults(filtered.length === 0);
-                showSpinner();
-    
-                if (filtered.length > 0) {
-                    await renderCurrentSearchPage();
-    
-                    // If the user clicked another category while we were loading, cancel this render
-                    if (currentCategorySlug !== renderForCategory) {
-                        gamesGrid.innerHTML = '';
-                        loadMoreBtn.style.display = 'none';
-                        updateGamesCount(0, 0);
-                    }
-                } else {
-                    hideSpinner();
-                }
-            });
-        });
-    }
-    
+// helper to fetch whichever list we need
+async function fetchGames(category) {
+    const base = `${API_BASE}/api/games`;
+    const url  = category === 'all'
+      ? base
+      : `${base}/type/${encodeURIComponent(category)}`;
+    const res  = await fetch(url);
+    const { data } = await res.json();
+    return data;
+  }
+  
+  function setupCategoryListeners() {
+    const categoryButtons = categoryBar.querySelectorAll('button');
+  
+    categoryButtons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        // reset search & paging state
+        searchInput.value        = '';
+        currentSearchPage        = 1;
+        filteredGameDetails      = [];
+        gamesGrid.innerHTML      = '';
+        loadMoreBtn.style.display= 'none';
+  
+        // active button styling
+        categoryButtons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+  
+        // determine category
+        const slug = btn.getAttribute('data-category');
+        currentCategorySlug = slug;
+  
+        // fetch from server (pins+recent for “all”, recent-only for types)
+        showSpinner();
+        filteredGameMatches = await fetchGames(slug);
+        hideSpinner();
+  
+        // if no results, show message
+        showNoResults(filteredGameMatches.length === 0);
+        updateGamesCount(0, filteredGameMatches.length);
+  
+        if (!filteredGameMatches.length) return;
+  
+        // render first page
+        const renderForCategory = currentCategorySlug;
+        await renderCurrentSearchPage();
+  
+        // if user switched categories mid‑load, clear
+        if (currentCategorySlug !== renderForCategory) {
+          gamesGrid.innerHTML   = '';
+          loadMoreBtn.style.display = 'none';
+          updateGamesCount(0, 0);
+        }
+      });
+    });
+  }
+  
+  // After you build your categoryBar:
+  fetchCategories().then(() => {
+    setupCategoryListeners();
+    // auto‑select “all” on initial load
+    categoryBar.querySelector('button[data-category="all"]').click();
+  });  
 
     async function fetchDetailsFor(gamesToLoad) {
         const params = new URLSearchParams();
@@ -688,9 +669,6 @@ document.addEventListener('DOMContentLoaded', () => {
         updateUserProfileVisibility();
         document.getElementById('profileModal').classList.add('hidden');
     });
-
-    fetchGamesFromLocalAPI();
-    fetchCategories();
 });
 
 document.addEventListener('DOMContentLoaded', () => {
