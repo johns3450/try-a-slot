@@ -10,6 +10,8 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
+const emailRoutes = require('./email');
+
 const { sendVerificationEmail } = require('./email');
 
 const USERS_FILE = path.join(__dirname, 'users.json');
@@ -30,6 +32,9 @@ sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 app.use(bodyParser.json());
 app.use(express.static('public'));
+
+app.use(express.json());
+app.use('/api', emailRoutes);    // mounts all email.js routes at /api
 
 // Load/save helpers
 function loadUsers() {

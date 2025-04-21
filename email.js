@@ -1,4 +1,8 @@
-app.post('/api/register', async (req, res) => {
+const express = require('express');
+const router  = express.Router();
+
+
+router.post('/register', async (req, res) => {
     try {
       const { email, country, captcha } = req.body;
       if (!email || !country || !captcha) {
@@ -31,3 +35,6 @@ app.post('/api/register', async (req, res) => {
       res.status(500).json({ error: 'Internal Server Error in /api/register' });
     }
   });
+
+  module.exports = router;
+  
