@@ -61,8 +61,7 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
   width="175"
   style="width:100%; max-width:175px; height:auto; margin:0 auto 20px; display:block;"
 />
-                    <h2>Verify Your Email</h2>
-                    <p>Hello,</p>
+                    <h2>Verify Your Email 🚀</h2>
                     <p>
                         Please verify your email for <strong>TRY'A'SLOT</strong> by clicking the button below:
                     </p>
