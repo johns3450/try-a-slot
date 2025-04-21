@@ -22,18 +22,6 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use('/api', emailRoutes); // Mount email routes
 
-// Proxy route for restcountries API
-app.get('/api/countries', async (req, res) => {
-    try {
-        const response = await fetch('https://restcountries.com/v3.1/all?fields=cca2,name,flags');
-        const data = await response.json();
-        res.json(data);
-    } catch (err) {
-        console.error('Error fetching countries:', err);
-        res.status(500).json({ error: 'Failed to fetch countries' });
-    }
-});
-
 // Load/save helpers
 function loadUsers() {
     const USERS_FILE = path.join(__dirname, 'users.json');

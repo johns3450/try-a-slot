@@ -1,0 +1,47 @@
+[
+  {
+    "cca2": "AF",
+    "name": {
+      "common": "Afghanistan"
+    },
+    "flags": {
+      "png": "https://flagcdn.com/w320/af.png"
+    }
+  },
+  {
+    "cca2": "AL",
+    "name": {
+      "common": "Albania"
+    },
+    "flags": {
+      "png": "https://flagcdn.com/w320/al.png"
+    }
+  },
+  {
+    "cca2": "DZ",
+    "name": {
+      "common": "Algeria"
+    },
+    "flags": {
+      "png": "https://flagcdn.com/w320/dz.png"
+    }
+  },
+  {
+    "cca2": "US",
+    "name": {
+      "common": "United States"
+    },
+    "flags": {
+      "png": "https://flagcdn.com/w320/us.png"
+    }
+  },
+  {
+    "cca2": "GB",
+    "name": {
+      "common": "United Kingdom"
+    },
+    "flags": {
+      "png": "https://flagcdn.com/w320/gb.png"
+    }
+  }
+]

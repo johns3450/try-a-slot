@@ -106,9 +106,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function populateCountrySelector() {
         try {
-            const res = await fetch('https://api.tryaslot.com/api/countries');
+            const res = await fetch('/countries.json');
             if (!res.ok) throw new Error('Failed to fetch countries');
-            const list = await res.json();
+            const list = await res.json(); // ✅ only call this once
+    
             const PRIORITY = ['GB', 'US'];
             const top = [], rest = [];
     
@@ -155,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error('Error populating country selector:', err);
         }
-    }
+    }    
 
     function generateCaptchaText() {
         const chars = 'ABCDEFGHJKMNPRSTUVWXYZabcdefghjkmnprstuvwxyz';
