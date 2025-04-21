@@ -113,7 +113,7 @@ html, body {
     async function confirmDelete() {
       if (!email) return alert('No email found');
 
-      const res = await fetch('/api/delete', {
+      const res = await fetch('https://api.tryaslot.com/api/delete', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
