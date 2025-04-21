@@ -248,15 +248,21 @@ body {
     transform: scale(1.05);
     transition: all 0.3s ease-in-out;
   }
-  
-  .game-card img {
-    width: 100%;
-    aspect-ratio: 16 / 9; /* 👈 keep images in a good ratio */
-    object-fit: cover;     /* 👈 prevents stretching while filling */
-    border-radius: 4px;
-    border: 1px solid #ccc;
-    transition: all 0.3s ease-in-out;
-  }
+
+  .game-card,
+.game-card img {
+  box-sizing: border-box;
+}
+
+.game-card img {
+  width: 100%;
+  /* you can drop aspect-ratio if you do the wrapper pattern below */
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  display: block;    /* remove inline‑image whitespace/padding quirks */
+}
   
   .game-card p {
     display: none; /* if you ever want text, make it flex-grow: 1 here */
@@ -385,6 +391,9 @@ text-align: center;
 }
 
 .email-modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     color: #111;
     background: #fff;
     padding: 20px 30px;
@@ -663,6 +672,9 @@ input#captchaInput {
   }
 
   .profile-modal-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
     color: #111;
     background: #fff;
     padding: 20px 30px;
