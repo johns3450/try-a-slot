@@ -1,0 +1,118 @@
+const fs = require('fs');
+const path = require('path');
+const sgMail = require('@sendgrid/mail');
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
+
+const USERS_FILE = path.join(__dirname, 'users.json');
+
+function loadUsers() {
+    if (!fs.existsSync(USERS_FILE)) return [];
+    const data = fs.readFileSync(USERS_FILE, 'utf8').trim();
+    if (!data) return [];
+    try {
+        return JSON.parse(data);
+    } catch (err) {
+        console.error('Error parsing users JSON. Resetting file to empty array.', err);
+        return [];
+    }
+}
+
+function saveUsers(users) {
+    fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+}
+
+async function sendVerificationEmail(toEmail, verificationUrl) {
+    // 1) Load & encode your logo once
+    const logoPath = path.join(__dirname, 'public/assets/logo.png');
+    const logoBase64 = fs.readFileSync(logoPath).toString('base64');
+
+    // 2) Build the message
+    const msg = {
+        to: toEmail,
+        from: { email: process.env.SENDER_EMAIL, name: "TRY'A'SLOT" },
+        subject: "Verify Your Email for TRY'A'SLOT",
+        text: `Please verify your email by clicking this link: ${verificationUrl}`,
+        html: `
+            <!-- Pre‑header: hidden snippet for inbox preview -->
+            <div style="
+                display:none;
+                font-size:1px;
+                color:#f2f2f2;
+                line-height:1px;
+                max-height:0;
+                max-width:0;
+                opacity:0;
+                overflow:hidden;
+            ">
+                Click to verify your email and unlock 25,000+ slot demo games instantly!
+            </div>
+
+            <div style="background-color:#f2f2f2;padding:40px;">
+                <div style="
+                    max-width:600px;
+                    margin:0 auto;
+                    background-color:#fff;
+                    padding:20px;
+                    border-radius:8px;
+                    text-align:center;
+                    font-family:Arial,sans-serif;
+                    font-size:14px;
+                    color:#111;
+                ">
+                    <img
+                        src="cid:logoImage"
+                        alt="TRY'A'SLOT"
+                        style="max-width:175px;margin:0 auto 20px;display:block;"
+                    />
+                    <h2>Verify Your Email</h2>
+                    <p>Hello,</p>
+                    <p>
+                        Please verify your email for <strong>TRY'A'SLOT</strong> by clicking the button below:
+                    </p>
+                    <p style="text-align:center;">
+                        <a
+                            href="${verificationUrl}"
+                            style="
+                                display:inline-block;
+                                background-color:#eb2f06;
+                                color:#fff;
+                                font-weight:600;
+                                font-size:16px;
+                                padding:8px 25px;
+                                text-decoration:none;
+                                border-radius:4px;
+                            "
+                        >
+                            Verify Email
+                        </a>
+                    </p>
+                    <p>
+                        Once you verify, you’ll be able to play
+                        <strong>25,000+ slot demo games</strong> from
+                        <strong>400+ providers</strong> instantly.
+                    </p>
+                    <p style="font-size:14px;color:#111;">
+                        If the button doesn’t work, copy and paste this link into your browser:
+                    </p>
+                    <p style="font-size:14px;color:#111;">
+                        ${verificationUrl}
+                    </p>
+                </div>
+            </div>
+        `,
+        attachments: [
+            {
+                content: logoBase64,
+                filename: 'logo.png',
+                type: 'image/png',
+                disposition: 'inline',
+                content_id: 'logoImage'
+            }
+        ]
+    };
+
+    // 3) Send via SendGrid
+    return sgMail.send(msg);
+}
+
+module.exports = { loadUsers, saveUsers, sendVerificationEmail };

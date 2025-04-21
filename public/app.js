@@ -105,51 +105,56 @@ document.addEventListener('DOMContentLoaded', () => {
     updateUserProfileVisibility();
 
     async function populateCountrySelector() {
-        const res = await fetch('https://restcountries.com/v3.1/all?fields=cca2,name,flags');
-        const list = await res.json();
-        const PRIORITY = ['GB','US'];
-        const top = [], rest = [];
-      
-        list.forEach(c => {
-          const label = `<img class="flag-icon" src="${c.flags.png}" /> ${c.name.common}`;
-          (PRIORITY.includes(c.cca2) ? top : rest).push({ value: c.cca2, label });
-        });
-      
-        rest.sort((a,b) =>
-          a.label.replace(/<[^>]*>/g,'')
-            .localeCompare(b.label.replace(/<[^>]*>/g,''))
-        );
-      
-        const choices = [
-            ...top,
-            ...rest
-        ];
-      
-        const countrySelect = document.getElementById('countrySelector');
-        const countryChoice = new Choices(countrySelect, {
-          choices,
-          searchEnabled: true,
-          shouldSort: false,
-          searchFields: ['value','label'],
-          fuseOptions: {
-            keys: ['label'],
-            threshold: 0.3,
-            ignoreLocation: true,
-            getFn: option => option.label.replace(/<[^>]*>/g,'')
-          },
-          placeholder: true,
-          placeholderValue: 'Select your country',
-          searchPlaceholderValue: 'Type to search…',
-          allowHTML: true,
-          itemSelectText: ''
-        });
-      
-        countrySelect.addEventListener('change', () => {
-          if (countrySelect.value) {
-            countryChoice.setChoiceByValue(countrySelect.value);
-            countrySelect.parentNode.classList.add('has-value');
-          }
-        });
+        try {
+            const res = await fetch('/api/countries');
+            if (!res.ok) throw new Error('Failed to fetch countries');
+            const list = await res.json();
+            const PRIORITY = ['GB', 'US'];
+            const top = [], rest = [];
+    
+            list.forEach(c => {
+                const label = `<img class="flag-icon" src="${c.flags.png}" /> ${c.name.common}`;
+                (PRIORITY.includes(c.cca2) ? top : rest).push({ value: c.cca2, label });
+            });
+    
+            rest.sort((a, b) =>
+                a.label.replace(/<[^>]*>/g, '')
+                    .localeCompare(b.label.replace(/<[^>]*>/g, ''))
+            );
+    
+            const choices = [
+                ...top,
+                ...rest
+            ];
+    
+            const countrySelect = document.getElementById('countrySelector');
+            const countryChoice = new Choices(countrySelect, {
+                choices,
+                searchEnabled: true,
+                shouldSort: false,
+                searchFields: ['value', 'label'],
+                fuseOptions: {
+                    keys: ['label'],
+                    threshold: 0.3,
+                    ignoreLocation: true,
+                    getFn: option => option.label.replace(/<[^>]*>/g, '')
+                },
+                placeholder: true,
+                placeholderValue: 'Select your country',
+                searchPlaceholderValue: 'Type to search…',
+                allowHTML: true,
+                itemSelectText: ''
+            });
+    
+            countrySelect.addEventListener('change', () => {
+                if (countrySelect.value) {
+                    countryChoice.setChoiceByValue(countrySelect.value);
+                    countrySelect.parentNode.classList.add('has-value');
+                }
+            });
+        } catch (err) {
+            console.error('Error populating country selector:', err);
+        }
     }
 
     function generateCaptchaText() {
