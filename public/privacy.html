@@ -127,11 +127,23 @@
               <li><strong>Withdraw Consent:</strong> Opt‑out of consent‑based processing.</li>
             </ul>
             <p>
-                If you'd like to request deletion of your data, 
-                <a href="https://tryaslot.com/delete.html?email=${toEmail}">
-                  click here
-                </a>.
+                If you'd like to request deletion of your data,
+                <span id="deleteLinkContainer">
+                  <a id="deleteLink" href="#">click here</a>
+                </span>.
               </p>
+              
+              <script>
+                const email = localStorage.getItem('tryaslot-email');
+                const linkEl = document.getElementById('deleteLink');
+                const container = document.getElementById('deleteLinkContainer');
+              
+                if (email) {
+                  linkEl.href = `https://tryaslot.com/delete.html?email=${encodeURIComponent(email)}`;
+                } else {
+                  container.innerHTML = `<span style="color: #888;">please log in to enable this option</span>`;
+                }
+              </script>
             <p>To exercise any other right, contact us at <a href="mailto:info@prizeone.co.uk">info@prizeone.co.uk</a>.</p>
           </section>
     

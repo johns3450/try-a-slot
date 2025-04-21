@@ -416,6 +416,7 @@ text-align: center;
   }
 
   .modal-body h2 {
+    margin-block-start: 0;
     margin-block-end: 1rem;
 }
 
@@ -425,7 +426,7 @@ text-align: center;
     justify-content: center;
     color: #111;
     background: #fff;
-    padding: 20px 30px;
+    padding: 40px 30px 30px;
     border-radius: 5px;
     position: relative;
     text-align: center;
@@ -447,6 +448,8 @@ input#userEmail {
   }
 
 #emailSubmit {
+    appearance: none;
+    -webkit-appearance: none;
     padding: 0.75rem 1rem;
     background: #eb2f06;
     color: #ffffff;
@@ -480,6 +483,8 @@ input#userEmail {
   }
 
 #registerSubmit {
+    appearance: none;
+    -webkit-appearance: none;
     padding: 0.75rem 1rem;
     background: #eb2f06;
     color: #ffffff;
@@ -518,6 +523,8 @@ input#userEmail {
   }
 
 #verificationDone {
+    appearance: none;
+    -webkit-appearance: none;
     padding: 0.75rem 1rem;
     background: #eb2f06;
     color: #ffffff;
@@ -709,7 +716,7 @@ input#captchaInput {
     justify-content: center;
     color: #111;
     background: #fff;
-    padding: 20px 30px;
+    padding: 40px 30px 30px;
     border-radius: 5px;
     position: relative;
     text-align: center;
@@ -745,12 +752,18 @@ input#captchaInput {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #ccc;
-    border-radius: 0.25rem;
-    background-color: #f9f9f9;
+    border: none;
+    border-radius: 5px;
+    background-color: #ccc;
     font-size: 1rem;
     color: #111;
+    margin: 0 auto;
   }
+
+  #logoutBtn:hover {
+    transition: all 0.3s ease-in-out;
+    box-shadow: 0px 0px 15px 0px #bebebe !important;
+}
   
   #gameOverlay {
     position: fixed;
