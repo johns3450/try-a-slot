@@ -20,7 +20,7 @@ app.use(cors({
 app.use(bodyParser.json());
 app.use(express.static('public'));
 app.use(express.json());
-app.use('/api', emailRoutes); // Mount email routes
+app.use('/api', emailRoutes);
 
 // Load/save helpers
 function loadUsers() {
@@ -65,7 +65,6 @@ app.post('/api/login', (req, res) => {
     }
 });
 
-// Check verification
 app.post('/api/check-verification', (req, res) => {
     try {
         const { email } = req.body;
@@ -84,7 +83,6 @@ app.post('/api/check-verification', (req, res) => {
     }
 });
 
-// Email verification
 app.get('/api/verify', (req, res) => {
     const { email } = req.query;
     if (!email) return res.status(400).send('Email parameter is required.');
@@ -99,14 +97,12 @@ app.get('/api/verify', (req, res) => {
     res.sendFile(path.join(__dirname, 'public/verified.html'));
 });
 
-// Search API
 app.get('/api/search', (req, res) => {
     const q = req.query.q || '';
     const results = searchGames(q);
     res.json({ data: results });
 });
 
-// Types API
 app.get('/api/types', (req, res) => {
     try {
         const types = getTypes();
@@ -116,7 +112,6 @@ app.get('/api/types', (req, res) => {
     }
 });
 
-// Category API
 app.get('/api/games/type/:slug', (req, res) => {
     const slug = req.params.slug;
     const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
@@ -129,7 +124,6 @@ app.get('/api/games/type/:slug', (req, res) => {
     }
 });
 
-// Hot/All games API
 app.get('/api/games', (req, res) => {
     try {
         const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
@@ -141,7 +135,6 @@ app.get('/api/games', (req, res) => {
     }
 });
 
-// Start server
 app.listen(PORT, () => {
     console.log(`Try'A'Slot server running on ${BASE_URL}`);
 });

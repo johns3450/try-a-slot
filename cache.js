@@ -5,7 +5,6 @@ const path     = require('path');
 const db       = new Database(path.join(__dirname, 'games.db'));
 db.pragma('journal_mode = WAL');
 
-// ─── SCHEMA ───────────────────────────────────────────────────────────────────
 db.prepare(`
   CREATE TABLE IF NOT EXISTS games (
     id INTEGER PRIMARY KEY,
@@ -31,12 +30,10 @@ db.prepare(`
   )
 `).run();
 
-// ─── UTILS ────────────────────────────────────────────────────────────────────
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Your 60 pinned IDs in the exact desired order:
 const pinnedGameIds = [
   12643, 359, 17845, 3272, 3311, 1045, 4622, 2570, 1052, 17680,
   2782, 1873, 761, 2521, 2411, 9914, 4447, 3276, 9759, 1081,
@@ -46,7 +43,6 @@ const pinnedGameIds = [
   6416, 1232, 742, 9760, 2781, 1443, 5987, 16711, 10045, 9650
 ];
 
-// ─── DATA FETCH & CACHE ───────────────────────────────────────────────────────
 async function fetchGameData() {
   let page = 1, allGames = [];
   while (true) {
@@ -78,12 +74,10 @@ async function updateCache() {
     console.log('🔄 Updating game and type cache...');
     const games = await fetchGameData();
 
-    // clear old data
     db.prepare('DELETE FROM games').run();
     db.prepare('DELETE FROM types').run();
     db.prepare('DELETE FROM pinned').run();
 
-    // insert games
     const insertGame = db.prepare(`
       INSERT INTO games (id, name, type_slug, thumb, url, updated_at)
       VALUES (?, ?, ?, ?, ?, ?)
@@ -102,7 +96,6 @@ async function updateCache() {
     });
     gameTx(games);
 
-    // build & insert types
     const counts = {}, names = {};
     for (const g of games) {
       const slug = g.type_slug || 'misc';
@@ -117,7 +110,6 @@ async function updateCache() {
     });
     typeTx();
 
-    // re‑insert your pins in order
     const insertPinned = db.prepare('INSERT INTO pinned (id) VALUES (?)');
     const pinTx = db.transaction(() => {
       for (const id of pinnedGameIds) {
@@ -136,17 +128,11 @@ async function updateCache() {
   }
 }
 
-// schedule & initial run
 cron.schedule('1 0 * * *', updateCache);
 updateCache();
 
-// ─── QUERY FUNCTIONS ─────────────────────────────────────────────────────────
-
-/**
- * Hot/All page: pinned first (in your custom order), then everything else by updated_at DESC.
- */
 function getAllGames(limit, offset) {
-  // build a CASE expression that ranks pinned IDs 0..59, all others 60
+
   const whenClauses = pinnedGameIds
     .map((id, idx) => `WHEN ${id} THEN ${idx}`)
     .join(' ');
@@ -167,9 +153,6 @@ function getAllGames(limit, offset) {
   return db.prepare(sql).all();
 }
 
-/**
- * Category pages: only games of a given type, most-recent-first.
- */
 function getGamesByType(typeSlug, limit, offset) {
   let sql = `
     SELECT *
@@ -185,9 +168,6 @@ function getGamesByType(typeSlug, limit, offset) {
   return db.prepare(sql).all(typeSlug);
 }
 
-/**
- * Search UI: pure updated_at DESC (ignoring pinned entirely).
- */
 function searchGames(query) {
   if (!query) {
     return db
@@ -206,8 +186,8 @@ function getTypes() {
 }
 
 module.exports = {
-  getAllGames,     // for hot/all only!
-  getGamesByType,  // for each category page
-  searchGames,     // for search bar
+  getAllGames,
+  getGamesByType,
+  searchGames,
   getTypes
 };

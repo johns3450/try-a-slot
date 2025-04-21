@@ -268,7 +268,7 @@ body {
   .game-card::before {
     content: '';
     display: block;
-    padding-top: calc(100% * 11 / 16); /* Enforce 16:11 aspect ratio */
+    padding-top: calc(100% * 11 / 16);
   }
   
   .game-card:hover {
@@ -276,13 +276,11 @@ body {
     transition: all 0.3s ease-in-out;
   }
   
-  /* Keep box-sizing consistent */
   .game-card,
   .game-card img {
     box-sizing: border-box;
   }
-  
-  /* Make image absolutely fill the space created by ::before */
+
   .game-card img {
     position: absolute;
     top: 0;
@@ -295,12 +293,10 @@ body {
     display: block;
   }
   
-  /* Keep your title or label hidden as before */
   .game-card p {
     display: none;
   }
   
-  /* Other layout styling */
   .games-count-container {
     justify-content: center;
     flex-wrap: wrap;

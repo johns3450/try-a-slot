@@ -22,11 +22,7 @@ function saveUsers(users) {
 }
 
 async function sendVerificationEmail(toEmail, verificationUrl) {
-    // 1) Load & encode your logo once
-    const logoPath = path.join(__dirname, 'public/assets/logo.png');
-    const logoBase64 = fs.readFileSync(logoPath).toString('base64');
 
-    // 2) Build the message
     const msg = {
         to: toEmail,
         from: { email: process.env.SENDER_EMAIL, name: "TRY'A'SLOT" },
@@ -60,10 +56,11 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
                     color:#111;
                 ">
                     <img
-                        src="cid:logoImage"
-                        alt="TRY'A'SLOT"
-                        style="max-width:175px;margin:0 auto 20px;display:block;"
-                    />
+  src="https://tryaslot.com/assets/logo.png"
+  alt="TRY'A'SLOT"
+  width="175"
+  style="width:100%; max-width:175px; height:auto; margin:0 auto 20px; display:block;"
+/>
                     <h2>Verify Your Email</h2>
                     <p>Hello,</p>
                     <p>
@@ -100,18 +97,9 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
                 </div>
             </div>
         `,
-        attachments: [
-            {
-                content: logoBase64,
-                filename: 'logo.png',
-                type: 'image/png',
-                disposition: 'inline',
-                content_id: 'logoImage'
-            }
-        ]
+        
     };
 
-    // 3) Send via SendGrid
     return sgMail.send(msg);
 }
 
