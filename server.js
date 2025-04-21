@@ -135,6 +135,22 @@ app.get('/api/games', (req, res) => {
     }
 });
 
+app.get('/delete', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public/delete.html'));
+  });
+  
+  app.post('/api/delete', (req, res) => {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+  
+    let users = loadUsers();
+    const filtered = users.filter(u => u.email !== email);
+    saveUsers(filtered);
+  
+    console.log(`✅ Deleted data for: ${email}`);
+    res.json({ success: true });
+  });
+
 app.listen(PORT, () => {
     console.log(`Try'A'Slot server running on ${BASE_URL}`);
 });

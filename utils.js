@@ -93,6 +93,12 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
                     <p style="font-size:14px;color:#111;">
                         ${verificationUrl}
                     </p>
+                    <p style="font-size:12px;color:#ccc;margin-top:30px;">
+  Didn't request this email?
+  <a href="https://tryaslot.com/delete?email=${toEmail}" style="color:#eb2f06;text-decoration:none;">
+    Click here
+  </a> to permanently remove all data associated with your email.
+</p>
                 </div>
             </div>
         `,
