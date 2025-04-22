@@ -269,13 +269,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function showSpinner() {
-        spinner.classList.remove('hidden');
+// Show spinner
+function showSpinner() {
+    const spinner = document.getElementById('spinner');
+    const message = document.getElementById('spinner-message');
+    if (spinner) spinner.classList.remove('hidden');
+    if (message) {
+      message.classList.remove('show');
+      message.classList.add('hidden');
+      setTimeout(() => {
+        if (!spinner.classList.contains('hidden')) {
+          message.classList.remove('hidden');
+          message.classList.add('show');
+        }
+      }, 1000);
     }
-
-    function hideSpinner() {
-        spinner.classList.add('hidden');
+  }
+  
+  // Hide spinner
+  function hideSpinner() {
+    const spinner = document.getElementById('spinner');
+    const message = document.getElementById('spinner-message');
+    if (spinner) spinner.classList.add('hidden');
+    if (message) {
+      message.classList.add('hidden');
+      message.classList.remove('show');
     }
+  }  
 
     function showNoResults(show) {
         noResultsMessage.classList.toggle('hidden', !show);

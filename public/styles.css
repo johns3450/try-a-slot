@@ -934,3 +934,17 @@ ul {
     opacity: 1;
     pointer-events: auto;
   }
+
+  .spinner-message {
+    font-size: 12px;
+    color: #999;
+    text-align: center;
+    margin-top: 10px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .spinner-message.show {
+    display: block;
+    opacity: 1;
+  }
+  
