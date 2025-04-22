@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const bodyParser = require('body-parser');
 const cors = require('cors');
+const compression = require('compression');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -12,6 +13,8 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 const emailRoutes = require('./email');
 const { searchGames, getTypes, getAllGames, getGamesByType } = require('./cache');
+
+app.use(compression());
 
 app.use(cors({
     origin: 'https://tryaslot.com'
@@ -22,7 +25,6 @@ app.use(express.static('public'));
 app.use(express.json());
 app.use('/api', emailRoutes);
 
-// Load/save helpers
 function loadUsers() {
     const USERS_FILE = path.join(__dirname, 'users.json');
     if (!fs.existsSync(USERS_FILE)) return [];
@@ -41,7 +43,6 @@ function saveUsers(users) {
     fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
 }
 
-// Login
 app.post('/api/login', (req, res) => {
     try {
         const { email } = req.body;
@@ -106,9 +107,22 @@ app.get('/api/search', (req, res) => {
 app.get('/api/types', (req, res) => {
     try {
         const types = getTypes();
+        res.set('Cache-Control', 'public, max-age=3600');
         res.json({ data: types });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch types' });
+    }
+});
+
+app.get('/api/games', (req, res) => {
+    try {
+        const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
+        const offset = req.query.offset ? parseInt(req.query.offset, 10) : undefined;
+        const games = getAllGames(limit, offset);
+        res.set('Cache-Control', 'public, max-age=3600');
+        res.json({ data: games });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch games' });
     }
 });
 
@@ -118,20 +132,10 @@ app.get('/api/games/type/:slug', (req, res) => {
     const offset = req.query.offset ? parseInt(req.query.offset, 10) : undefined;
     try {
         const games = getGamesByType(slug, limit, offset);
+        res.set('Cache-Control', 'public, max-age=3600');
         res.json({ data: games });
     } catch (err) {
         res.status(500).json({ error: 'Failed to fetch games for category' });
-    }
-});
-
-app.get('/api/games', (req, res) => {
-    try {
-        const limit = req.query.limit ? parseInt(req.query.limit, 10) : undefined;
-        const offset = req.query.offset ? parseInt(req.query.offset, 10) : undefined;
-        const games = getAllGames(limit, offset);
-        res.json({ data: games });
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch games' });
     }
 });
 
