@@ -1,56 +1,65 @@
+// === splash screen IIFE: pulse then slide+scale ===
 (function(){
     const overlay   = document.getElementById('initialOverlay');
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
+    // already shown?
     if (localStorage.getItem('splashShown')) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
       return;
     }
   
+    // hide the real header logo until the end
     finalLogo.style.visibility = 'hidden';
+  
     let hasLoaded = false;
     window.addEventListener('load', () => { hasLoaded = true; });
   
     function doTransition() {
-      // measure start and end
+      // measure exactly where we need to go
       const dest = finalLogo.getBoundingClientRect();
       const src  = splashImg.getBoundingClientRect();
       const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
       const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
       const finalScale = dest.width / src.width;
   
-      // fade only the background
-      overlay.classList.add('hidden');
-  
-      // keyframes with initial zoom out/in, then translate + final zoom
-      const keyframes = [
-        { offset: 0,   transform: `translate(0px, 0px) scale(1)` }, // start
-        { offset: 0.1, transform: `translate(0px, 0px) scale(0.8)` }, // zoom out
-        { offset: 0.3, transform: `translate(0px, 0px) scale(1.2)` }, // zoom in
-        { offset: 0.6, transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.0)` }, // start moving
-        { offset: 1,   transform: `translate(${dx}px, ${dy}px) scale(${finalScale})` } // final position
-      ];
-      const timing = {
-        duration: 1000, // slightly longer for smoothness
+      // —— Stage 1: pulse in place ——
+      splashImg.animate([
+        { transform: 'scale(1)'   },
+        { transform: 'scale(0.8)' },
+        { transform: 'scale(1.2)' }
+      ], {
+        duration: 300,
         easing: 'ease-in-out',
         fill: 'forwards'
-      };
-  
-      const anim = splashImg.animate(keyframes, timing);
-      anim.onfinish = () => {
-        finalLogo.style.visibility = 'visible';
-        overlay.remove();
-        localStorage.setItem('splashShown', '1');
+      }).onfinish = () => {
+        // —— Stage 2: move+scale into header + fade bg ——
+        overlay.classList.add('hidden');
+        splashImg.animate([
+          { transform: 'scale(1.2)' },
+          { transform: `translate(${dx}px, ${dy}px) scale(${finalScale})` }
+        ], {
+          duration: 700,
+          easing: 'ease-in-out',
+          fill: 'forwards'
+        }).onfinish = () => {
+          finalLogo.style.visibility = 'visible';
+          overlay.remove();
+          localStorage.setItem('splashShown', '1');
+        };
       };
     }
   
+    // enforce 2s minimum & wait for load
     setTimeout(() => {
       if (hasLoaded) doTransition();
       else window.addEventListener('load', doTransition);
     }, 2000);
-})();
+  
+  })();
+  
 
   
 

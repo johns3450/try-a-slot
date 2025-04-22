@@ -40,18 +40,19 @@ body {
     pointer-events: none;
   }
   
-  /* splash logo sizing + center origin */
+  /* splash logo sizing + transform origin */
   .overlay-logo {
     display: block;
-    width: 120px;       /* your desktop start size */
+    width: 120px;          /* desktop start */
     height: auto;
     transform-origin: center center;
   }
   @media (max-width: 600px) {
     .overlay-logo {
-      width: 100px;      /* smaller on phones */
+      width: 80px;         /* shrink more on phones */
     }
   }
+  
   
   
 
