@@ -106,73 +106,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function populateCountrySelector() {
         try {
-          const res = await fetch('/countries.json');
-          if (!res.ok) throw new Error('Failed to fetch countries');
-          const list = await res.json();
-      
-          const PRIORITY = ['GB', 'US'];
-          const top = [], rest = [];
-      
-          list.forEach(c => {
-            const countryData = {
-              value: c.cca2,
-              label: c.name.common,
-              customProperties: {
-                flagUrl: c.flags?.png || ''
-              }
-            };
-            (PRIORITY.includes(c.cca2) ? top : rest).push(countryData);
-          });
-      
-          rest.sort((a, b) => a.label.localeCompare(b.label));
-          const choices = [...top, ...rest];
-      
-          const countrySelect = document.getElementById('countrySelector');
-      
-          const countryChoice = new Choices(countrySelect, {
-            choices,
-            searchEnabled: true,
-            shouldSort: false,
-            searchFields: ['value', 'label'],
-            fuseOptions: {
-              keys: ['label'],
-              threshold: 0.3,
-              ignoreLocation: true,
-              getFn: option => option.label
-            },
-            placeholder: true,
-            placeholderValue: 'Select your country',
-            searchPlaceholderValue: 'Type to search…',
-            allowHTML: true,
-            itemSelectText: '',
-            callbackOnCreateTemplates: function (template) {
-                return {
-                  option: (classNames, data) => {
-                    const flagUrl = data.customProperties?.flagUrl || '';
-                    const flag = flagUrl
-                      ? `<img src="${flagUrl}" class="flag-icon" alt="" />`
-                      : '';
-                    return template(`
-                      <div class="${classNames.item} ${classNames.itemChoice}" data-select-text="" data-choice data-choice-selectable data-id="${data.id}" data-value="${data.value}" ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'role="option"'}>
-                        ${flag} ${data.label}
-                      </div>
-                    `);
-                  }
-                };
-              }              
-          });
-      
-          countrySelect.addEventListener('change', () => {
-            if (countrySelect.value) {
-              countryChoice.setChoiceByValue(countrySelect.value);
-              countrySelect.parentNode.classList.add('has-value');
-            }
-          });
-      
+            const res = await fetch('/countries.json');
+            if (!res.ok) throw new Error('Failed to fetch countries');
+            const list = await res.json(); // ✅ only call this once
+    
+            const PRIORITY = ['GB', 'US'];
+            const top = [], rest = [];
+    
+            list.forEach(c => {
+                const label = `<img class="flag-icon" src="${c.flags.png}" /> ${c.name.common}`;
+                (PRIORITY.includes(c.cca2) ? top : rest).push({ value: c.cca2, label });
+            });
+    
+            rest.sort((a, b) =>
+                a.label.replace(/<[^>]*>/g, '')
+                    .localeCompare(b.label.replace(/<[^>]*>/g, ''))
+            );
+    
+            const choices = [
+                ...top,
+                ...rest
+            ];
+    
+            const countrySelect = document.getElementById('countrySelector');
+            const countryChoice = new Choices(countrySelect, {
+                choices,
+                searchEnabled: true,
+                shouldSort: false,
+                searchFields: ['value', 'label'],
+                fuseOptions: {
+                    keys: ['label'],
+                    threshold: 0.3,
+                    ignoreLocation: true,
+                    getFn: option => option.label.replace(/<[^>]*>/g, '')
+                },
+                placeholder: true,
+                placeholderValue: 'Select your country',
+                searchPlaceholderValue: 'Type to search…',
+                allowHTML: true,
+                itemSelectText: ''
+            });
+    
+            countrySelect.addEventListener('change', () => {
+                if (countrySelect.value) {
+                    countryChoice.setChoiceByValue(countrySelect.value);
+                    countrySelect.parentNode.classList.add('has-value');
+                }
+            });
         } catch (err) {
-          console.error('Error populating country selector:', err);
+            console.error('Error populating country selector:', err);
         }
-      }        
+    }    
 
     function generateCaptchaText() {
         const chars = 'ABCDEFGHJKMNPRSTUVWXYZabcdefghjkmnprstuvwxyz';
