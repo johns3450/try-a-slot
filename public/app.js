@@ -24,15 +24,16 @@
       // fade only the background
       overlay.classList.add('hidden');
   
-      // keyframes with zoom out, in, out effect
+      // keyframes with initial zoom out/in, then translate + final zoom
       const keyframes = [
-        { offset: 0,   transform: `translate(0px, 0px)        scale(1)`       },
-        { offset: 0.2, transform: `translate(${dx*0.2}px, ${dy*0.2}px) scale(0.8)` }, // zoom out
-        { offset: 0.5, transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.2)` }, // zoom in
-        { offset: 1,   transform: `translate(${dx}px,    ${dy}px)    scale(${finalScale})` } // zoom out to final
+        { offset: 0,   transform: `translate(0px, 0px) scale(1)` }, // start
+        { offset: 0.1, transform: `translate(0px, 0px) scale(0.8)` }, // zoom out
+        { offset: 0.3, transform: `translate(0px, 0px) scale(1.2)` }, // zoom in
+        { offset: 0.6, transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.0)` }, // start moving
+        { offset: 1,   transform: `translate(${dx}px, ${dy}px) scale(${finalScale})` } // final position
       ];
       const timing = {
-        duration: 750,
+        duration: 1000, // slightly longer for smoothness
         easing: 'ease-in-out',
         fill: 'forwards'
       };
