@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const res = await fetch('/countries.json');
             if (!res.ok) throw new Error('Failed to fetch countries');
-            const list = await res.json(); // ✅ only call this once
+            const list = await res.json();
     
             const PRIORITY = ['GB', 'US'];
             const top = [], rest = [];
