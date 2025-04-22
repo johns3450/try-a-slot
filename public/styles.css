@@ -563,10 +563,6 @@ input#userEmail {
         scrollbar-color: #ccc transparent;
       }
 
-  .choices__list--dropdown .choices__list, .choices__list[aria-expanded] .choices__list {
-    max-height: clamp(50px, 25vh, 300px) !important;
-  }
-
   .choices__list--dropdown[aria-expanded="true"] {
     transform: scaleY(1);
   }
