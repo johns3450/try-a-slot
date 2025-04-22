@@ -5,11 +5,6 @@ body {
     background: #111;
     color: #fff;
     overflow-x: hidden;
-    box-sizing: border-box;
-}
-
-*, *::before, *::after {
-  box-sizing: inherit;
 }
 
   body {
@@ -144,6 +139,8 @@ body {
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
+    scroll-padding-left: 1px;
+    padding-left: 1px;
   }
 
   .categories::-webkit-scrollbar {
@@ -868,12 +865,12 @@ input#captchaInput {
     background: #fff;
     border: none;
     color: #111;
-    font-size: 1.5rem;
+    font-size: 2rem;
     cursor: pointer;
     z-index: 10000;
     border-radius: 50%;
     opacity: 0.8;
-  
+    padding-bottom: 4px;
     appearance: none;
     -webkit-appearance: none;
   }
