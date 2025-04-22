@@ -48,7 +48,8 @@
       if (hasLoaded) doTransition();
       else window.addEventListener('load', doTransition);
     }, 2000);
-  })();  
+  })();
+  
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
