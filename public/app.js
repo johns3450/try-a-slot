@@ -18,39 +18,38 @@
     window.addEventListener('load', () => { hasLoaded = true; });
   
     function doTransition() {
-      // measure exactly where we need to go
-      const dest = finalLogo.getBoundingClientRect();
-      const src  = splashImg.getBoundingClientRect();
-      const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
-      const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
-      const finalScale = dest.width / src.width;
-  
-      // —— Stage 1: pulse in place ——
-      splashImg.animate([
-        { transform: 'scale(1)'   },
-        { transform: 'scale(0.8)' },
-        { transform: 'scale(1.2)' }
-      ], {
-        duration: 300,
-        easing: 'ease-in-out',
-        fill: 'forwards'
-      }).onfinish = () => {
-        // —— Stage 2: move+scale into header + fade bg ——
-        overlay.classList.add('hidden');
+        // 1) where our final logo lives…
+        const dest = finalLogo.getBoundingClientRect();
+        // 2) where our splash currently lives…
+        const src  = splashImg.getBoundingClientRect();
+      
+        // compute the vector from splash → final (both centres)
+        const dx = (dest.left + dest.width/2) - (src.left + src.width/2);
+        const dy = (dest.top  + dest.height/2) - (src.top  + src.height/2);
+        const finalScale = dest.width / src.width;
+      
+        // single WA API animation: pulse first (0–300ms), then move+zoom (300–1000ms)
         splashImg.animate([
-          { transform: 'scale(1.2)' },
-          { transform: `translate(${dx}px, ${dy}px) scale(${finalScale})` }
+          { transform: 'scale(1)',            offset: 0   },
+          { transform: 'scale(0.8)',          offset: 0.3 },
+          { transform: 'scale(1.2)',          offset: 0.3 },
+          {
+            transform: `translate(${dx}px, ${dy}px) scale(${finalScale})`,
+            offset: 1
+          }
         ], {
-          duration: 700,
-          easing: 'ease-in-out',
-          fill: 'forwards'
+          duration: 1000,            // total: 300ms pulse + 700ms move
+          easing:   'ease-in-out',
+          fill:     'forwards'
         }).onfinish = () => {
           finalLogo.style.visibility = 'visible';
           overlay.remove();
           localStorage.setItem('splashShown', '1');
         };
-      };
-    }
+      
+        // fade the background at the same time:
+        overlay.classList.add('hidden');
+      }      
   
     // enforce 2s minimum & wait for load
     setTimeout(() => {
