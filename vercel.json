@@ -3,11 +3,10 @@
       {
         "source": "/(.*)",
         "has": [
-          { "type": "host", "value": "tryaslot.com" },
           { "type": "protocol", "value": "http" }
         ],
         "destination": "https://tryaslot.com/$1",
-        "permanent": true
+        "statusCode": 301
       }
     ]
   }
