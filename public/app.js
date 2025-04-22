@@ -1,4 +1,3 @@
-// === splash screen IIFE with distributed translation + scale ===
 (function(){
     const overlay   = document.getElementById('initialOverlay');
     const splashImg = overlay.querySelector('.overlay-logo');
@@ -25,12 +24,12 @@
       // fade only the background
       overlay.classList.add('hidden');
   
-      // keyframes that blend translate+scale all the way through
+      // keyframes with zoom out, in, out effect
       const keyframes = [
         { offset: 0,   transform: `translate(0px, 0px)        scale(1)`       },
-        { offset: 0.2, transform: `translate(${dx*0.2}px, ${dy*0.2}px) scale(0.9)`     },
-        { offset: 0.5, transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.1)`     },
-        { offset: 1,   transform: `translate(${dx}px,    ${dy}px)    scale(${finalScale})` }
+        { offset: 0.2, transform: `translate(${dx*0.2}px, ${dy*0.2}px) scale(0.8)` }, // zoom out
+        { offset: 0.5, transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.2)` }, // zoom in
+        { offset: 1,   transform: `translate(${dx}px,    ${dy}px)    scale(${finalScale})` } // zoom out to final
       ];
       const timing = {
         duration: 750,
@@ -50,8 +49,7 @@
       if (hasLoaded) doTransition();
       else window.addEventListener('load', doTransition);
     }, 2000);
-  })();
-  
+})();
 
   
 
