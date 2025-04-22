@@ -20,12 +20,15 @@
 <meta name="theme-color" content="#111">
 </head>
 <body>
-    <div id="initialOverlay"></div>
-
+    <div id="initialOverlay">
+        <!-- duplicate of the logo, centered in the overlay -->
+        <img id="initialLogo" src="assets/logo.png" alt="Logo" />
+      </div>
     
-    <header>
+      <header>
         <div class="header-container">
           <div class="logo-container">
+            <!-- real header logo, hidden until after animation -->
             <img src="assets/logo.png" alt="Try'A'Slot Logo" class="site-logo" />
           </div>
           <div id="userProfile" class="person-icon">
@@ -33,8 +36,6 @@
           </div>
         </div>
       </header>
-
-  <div class="content-wrapper">
 
     <div class="intro-text">
       <p>🎰 25,000+ Slots&nbsp;&nbsp;&nbsp;✅ All Free To Play</p>
