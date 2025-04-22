@@ -1,39 +1,36 @@
-// === splash screen IIFE with explicit offsets ===
+// === splash screen IIFE with distributed translation + scale ===
 (function(){
     const overlay   = document.getElementById('initialOverlay');
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
-    // Already seen? bail out.
     if (localStorage.getItem('splashShown')) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
       return;
     }
   
-    // hide the real logo until our animation ends
     finalLogo.style.visibility = 'hidden';
-  
     let hasLoaded = false;
     window.addEventListener('load', () => { hasLoaded = true; });
   
     function doTransition() {
-      // compute move+scale
+      // measure start and end
       const dest = finalLogo.getBoundingClientRect();
       const src  = splashImg.getBoundingClientRect();
       const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
       const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
-      const scale = dest.width / src.width;
+      const finalScale = dest.width / src.width;
   
-      // start fading the bg
+      // fade only the background
       overlay.classList.add('hidden');
   
-      // three‑phase zoom keyframes with explicit offsets
+      // keyframes that blend translate+scale all the way through
       const keyframes = [
-        { transform: 'translate(0,0) scale(1)',   offset: 0   }, // start
-        { transform: 'translate(0,0) scale(0.9)', offset: 0.2 }, // slight out
-        { transform: 'translate(0,0) scale(1.1)', offset: 0.5 }, // slight in
-        { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, offset: 1 } // final
+        { offset: 0,   transform: `translate(0px, 0px)        scale(1)`       },
+        { offset: 0.2, transform: `translate(${dx*0.2}px, ${dy*0.2}px) scale(0.9)`     },
+        { offset: 0.5, transform: `translate(${dx*0.5}px, ${dy*0.5}px) scale(1.1)`     },
+        { offset: 1,   transform: `translate(${dx}px,    ${dy}px)    scale(${finalScale})` }
       ];
       const timing = {
         duration: 750,
@@ -49,12 +46,11 @@
       };
     }
   
-    // wait 2s minimum AND for full load
     setTimeout(() => {
       if (hasLoaded) doTransition();
       else window.addEventListener('load', doTransition);
     }, 2000);
-  })();  // ← no extra brace here!
+  })();
   
 
   
