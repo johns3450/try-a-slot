@@ -694,14 +694,45 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
 }
 
 window.addEventListener('load', () => {
-    if (!localStorage.getItem('initialOverlayShown')) {
+    const seen = localStorage.getItem('initialOverlayShown');
+    const overlay   = document.getElementById('initialOverlay');
+    const introLogo = document.getElementById('introLogo');
+    const headerLogo= document.getElementById('headerLogo');
+  
+    if (!seen) {
+      // 2s delay so overlay always stays up a bit
       setTimeout(() => {
-        document.body.classList.add('no-overlay');
-        document.getElementById('initialOverlay').remove();
-        localStorage.setItem('initialOverlayShown', '1');
-      }, 2000); // matches 1s fly + 1s fade
+        // measure where headerLogo ends up
+        const targetRect  = headerLogo.getBoundingClientRect();
+        const startRect   = introLogo.getBoundingClientRect();
+        const dx = (targetRect.left + targetRect.width/2)
+                 - (startRect.left  + startRect.width/2);
+        const dy = (targetRect.top  + targetRect.height/2)
+                 - (startRect.top   + startRect.height/2);
+        const scale = targetRect.width / startRect.width;
+  
+        // kick off the 1s transitions
+        // ‑ move & scale logo
+        introLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+        // ­ fade out overlay
+        overlay.style.opacity = '0';
+  
+        // once the *overlay* opacity transition ends...
+        overlay.addEventListener('transitionend', e => {
+          if (e.propertyName === 'opacity') {
+            // remove overlay, reveal header logo, mark seen
+            document.body.classList.add('no-overlay');
+            overlay.remove();
+            localStorage.setItem('initialOverlayShown','1');
+          }
+        }, { once: true });
+  
+      }, 2000);
+  
     } else {
-      document.getElementById('initialOverlay')?.remove();
+      // subsequent loads: just ditch overlay, show header immediately
+      overlay.remove();
       document.body.classList.add('no-overlay');
     }
   });
+  

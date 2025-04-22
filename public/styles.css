@@ -56,22 +56,6 @@ body {
     opacity: 1;
   }
 
-  /* keyframes for the logo: center → top center */
-@keyframes flyLogo {
-    to {
-      /* 
-        Move it up to roughly the header. 
-        Adjust ‘top’ to match header height, scale to final width ratio.
-      */
-      transform: translateY(-40vh) scale(0.35);
-    }
-  }
-  
-  /* fade out the blue overlay */
-  @keyframes fadeOverlay {
-    to { opacity: 0; visibility: hidden; }
-  }
-
   .header-container {
     display: flex;
     justify-content: center;
