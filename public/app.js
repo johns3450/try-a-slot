@@ -118,7 +118,7 @@ document.addEventListener('DOMContentLoaded', () => {
               value: c.cca2,
               label: c.name.common,
               customProperties: {
-                flagUrl: c.flags.png
+                flagUrl: c.flags?.png || ''
               }
             };
             (PRIORITY.includes(c.cca2) ? top : rest).push(countryData);
@@ -148,7 +148,7 @@ document.addEventListener('DOMContentLoaded', () => {
             callbackOnCreateTemplates: function (template) {
                 return {
                   option: (classNames, data) => {
-                    const flagUrl = data.customProperties && data.customProperties.flagUrl;
+                    const flagUrl = data.customProperties?.flagUrl || '';
                     const flag = flagUrl
                       ? `<img src="${flagUrl}" class="flag-icon" alt="" />`
                       : '';
