@@ -28,8 +28,8 @@
     let imagesReady = 0;
     function checkReady() {
       if (++imagesReady < 3) return;
-      // 3s minimum
-      const wait = Math.max(3000 - (Date.now() - start), 0);
+      // 2s minimum
+      const wait = Math.max(2000 - (Date.now() - start), 0);
       setTimeout(doTransition, wait);
     }
   
@@ -52,7 +52,7 @@
       const scale = destR.width / srcR.width;
   
       // animate
-      splashImg.style.transform = translate(${dx}px, ${dy}px) scale(${scale});
+      splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
       overlay.classList.add('hidden');
   
       // as soon as the zoom ends, reveal the header logo
@@ -72,7 +72,7 @@
       // mark it done
       setSplashCookie();
     }
-  })();  
+  })();   
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
