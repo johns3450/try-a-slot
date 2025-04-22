@@ -745,7 +745,7 @@ input#captchaInput {
   #logoutBtn {
     appearance: none;
     -webkit-appearance: none;
-    background: none;
+    background: #ccc;
     border: none;
     padding: 0.5rem 1rem;
     cursor: pointer;
@@ -754,9 +754,10 @@ input#captchaInput {
     justify-content: center;
     border: none;
     border-radius: 5px;
-    background-color: #ccc;
     font-size: medium;
+    font-weight: 600;
     color: #111;
+    line-height: 1;
     transition: all 0.3s ease-in-out;
     margin: 0 auto;
   }
