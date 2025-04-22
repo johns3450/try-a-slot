@@ -438,9 +438,8 @@ text-align: center;
 input#userEmail {
     width: 100%;
     box-sizing: border-box;
-    height: 30px;
     font-size: 16px;
-    padding: 0.5rem;
+    padding: 7.5px;
     margin-bottom: 1rem;
     border-radius: 3px;
     border: 1px solid rgb(118, 118, 118);
@@ -550,7 +549,6 @@ input#userEmail {
         max-height: clamp(100px, 25vh, 350px);
         overflow-y: auto;
         transform-origin: top center;
-        transform: scaleY(0);
         transition: transform 0.3s ease;
         scrollbar-width: thin;
         scrollbar-color: #ccc transparent;
@@ -563,6 +561,10 @@ input#userEmail {
 
   .choices__list--dropdown[aria-expanded="true"] {
     transform: scaleY(1);
+  }
+
+  .choices__list--dropdown[aria-expanded="false"] {
+    transform: scaleY(0);
   }
 
   .choices__list--dropdown, [aria-expanded] {
@@ -624,12 +626,17 @@ input#userEmail {
     font-size: 14px !important;
 }
 
+.choices__list--single {
+    padding: 0 !important;
+}
+
   .flag-icon {
     width: 20px;
     height: auto;
     margin-right: 0.5rem;
     vertical-align: middle;
     border-radius: 2px;
+    margin-top: -2.5px;
   }
 
   .captcha-container {
@@ -662,9 +669,8 @@ input#userEmail {
 input#captchaInput {
     width: 100%;
     box-sizing: border-box;
-    height: 30px;
     font-size: 16px;
-    padding: 0.5rem;
+    padding: 7.5px;
     margin-top: 0.5rem;
     margin-bottom: 1rem;
     border-radius: 3px;
