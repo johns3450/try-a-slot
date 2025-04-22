@@ -1,62 +1,61 @@
-// === splash screen IIFE with 3‑step zoom via WAAPI ===
+// === splash screen IIFE with explicit offsets ===
 (function(){
-  const overlay   = document.getElementById('initialOverlay');
-  const splashImg = overlay.querySelector('.overlay-logo');
-  const finalLogo = document.querySelector('.site-logo');
-
-  // If already seen, ditch splash and show header logo immediately
-  if (localStorage.getItem('splashShown')) {
-    overlay.remove();
-    finalLogo.style.visibility = 'visible';
-    return;
-  }
-
-  // hide the header logo until our own animation ends
-  finalLogo.style.visibility = 'hidden';
-
-  // wait for full load
-  let hasLoaded = false;
-  window.addEventListener('load', () => { hasLoaded = true; });
-
-  function doTransition() {
-    // measure source/target
-    const dest = finalLogo.getBoundingClientRect();
-    const src  = splashImg.getBoundingClientRect();
-    const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
-    const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
-    const scale = dest.width / src.width;
-
-    // kick off the background fade
-    overlay.classList.add('hidden');
-
-    // define your 3‑step zoom keyframes
-    const keyframes = [
-      { transform: 'translate(0,0) scale(1)' },      // start
-      { transform: 'translate(0,0) scale(0.9)' },    // slight zoom-out
-      { transform: 'translate(0,0) scale(1.2)' },    // then zoom-in
-      { transform: `translate(${dx}px, ${dy}px) scale(${scale})` } // final
-    ];
-    const timing = {
-      duration: 750,           // total 0.5s
-      easing: 'ease-in-out',
-      fill: 'forwards'
-    };
-    const anim = splashImg.animate(keyframes, timing);
-
-    // when the zoom finishes, show the real logo
-    anim.onfinish = () => {
-      finalLogo.style.visibility = 'visible';
+    const overlay   = document.getElementById('initialOverlay');
+    const splashImg = overlay.querySelector('.overlay-logo');
+    const finalLogo = document.querySelector('.site-logo');
+  
+    // Already seen? bail out.
+    if (localStorage.getItem('splashShown')) {
       overlay.remove();
-      localStorage.setItem('splashShown', '1');
-    };
-  }
-
-  // enforce 2s minimum & wait for load
-  setTimeout(() => {
-    if (hasLoaded) doTransition();
-    else window.addEventListener('load', doTransition);
-  }, 2000);
-})();
+      finalLogo.style.visibility = 'visible';
+      return;
+    }
+  
+    // hide the real logo until our animation ends
+    finalLogo.style.visibility = 'hidden';
+  
+    let hasLoaded = false;
+    window.addEventListener('load', () => { hasLoaded = true; });
+  
+    function doTransition() {
+      // compute move+scale
+      const dest = finalLogo.getBoundingClientRect();
+      const src  = splashImg.getBoundingClientRect();
+      const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
+      const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
+      const scale = dest.width / src.width;
+  
+      // start fading the bg
+      overlay.classList.add('hidden');
+  
+      // three‑phase zoom keyframes with explicit offsets
+      const keyframes = [
+        { transform: 'translate(0,0) scale(1)',   offset: 0   }, // start
+        { transform: 'translate(0,0) scale(0.9)', offset: 0.2 }, // slight out
+        { transform: 'translate(0,0) scale(1.1)', offset: 0.5 }, // slight in
+        { transform: `translate(${dx}px, ${dy}px) scale(${scale})`, offset: 1 } // final
+      ];
+      const timing = {
+        duration: 750,
+        easing: 'ease-in-out',
+        fill: 'forwards'
+      };
+  
+      const anim = splashImg.animate(keyframes, timing);
+      anim.onfinish = () => {
+        finalLogo.style.visibility = 'visible';
+        overlay.remove();
+        localStorage.setItem('splashShown', '1');
+      };
+    }
+  
+    // wait 2s minimum AND for full load
+    setTimeout(() => {
+      if (hasLoaded) doTransition();
+      else window.addEventListener('load', doTransition);
+    }, 2000);
+  })();  // ← no extra brace here!
+  
 
   
 

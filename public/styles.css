@@ -26,7 +26,7 @@ body {
     background: transparent;
   }
 
-/* only fade the overlay background, not the logo */
+/* fade only the overlay bg, not the logo */
 #initialOverlay {
     position: fixed; top: 0; left: 0;
     width: 100vw; height: 100vh;
@@ -40,19 +40,19 @@ body {
     pointer-events: none;
   }
   
-  /* splash logo initial sizing + transform origin */
+  /* splash logo sizing + center origin */
   .overlay-logo {
     display: block;
-    width: 120px;      /* desktop default */
+    width: 120px;       /* your desktop start size */
     height: auto;
     transform-origin: center center;
   }
-  /* smaller on mobile */
   @media (max-width: 600px) {
     .overlay-logo {
-      max-width: 90px;
+      width: 80px;      /* smaller on phones */
     }
   }
+  
   
 
   .header-container {
