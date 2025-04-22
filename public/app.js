@@ -1,59 +1,4 @@
-if (!localStorage.getItem('initialOverlayShown')) {
-    const overlay    = document.getElementById('initialOverlay');
-    const introLogo  = document.getElementById('initialLogo');
-    const headerLogo = document.querySelector('.site-logo');
-  
-    // build promises for load, logo image, fonts…
-    const loadPromise = new Promise(res =>
-      document.readyState === 'complete'
-        ? res()
-        : window.addEventListener('load', res)
-    );
-    const logoImg = document.getElementById('logoImg');
-    const logoPromise = logoImg
-      ? (
-          logoImg.complete
-            ? Promise.resolve()
-            : new Promise(res => logoImg.addEventListener('load', res))
-        )
-      : Promise.resolve();
-    const fontPromise = (document.fonts && document.fonts.ready)
-      ? document.fonts.ready
-      : Promise.resolve();
-  
-    Promise.all([loadPromise, logoPromise, fontPromise]).then(() => {
-      // 1️⃣ measure
-      const targetRect       = headerLogo.getBoundingClientRect();
-      const overlayLogoRect  = introLogo.getBoundingClientRect();
-      const centerX          = window.innerWidth / 2;
-      const centerY          = window.innerHeight / 2;
-      const targetX          = targetRect.left + targetRect.width / 2;
-      const targetY          = targetRect.top  + targetRect.height / 2;
-      const deltaX           = targetX - centerX;
-      const deltaY           = targetY - centerY;
-      const scale            = targetRect.width / overlayLogoRect.width;
-  
-      // 2️⃣ trigger the fly + fade
-      requestAnimationFrame(() => {
-        introLogo.style.transform = 
-          `translate(${deltaX}px, ${deltaY}px) scale(${scale})`;
-        overlay.classList.add('hidden');
-      });
-  
-      // 3️⃣ cleanup & persist
-      overlay.addEventListener('transitionend', e => {
-        if (e.propertyName === 'opacity') {
-          overlay.remove();
-          headerLogo.style.opacity = 1;                   // reveal real logo
-          localStorage.setItem('initialOverlayShown', '1');
-        }
-      }, { once: true });
-    });
-  
-  } else {
-    // already shown once — just kill it
-    document.getElementById('initialOverlay')?.remove();
-  }  
+
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
@@ -747,3 +692,16 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
+
+window.addEventListener('load', () => {
+    if (!localStorage.getItem('initialOverlayShown')) {
+      setTimeout(() => {
+        document.body.classList.add('no-overlay');
+        document.getElementById('initialOverlay').remove();
+        localStorage.setItem('initialOverlayShown', '1');
+      }, 2000); // matches 1s fly + 1s fade
+    } else {
+      document.getElementById('initialOverlay')?.remove();
+      document.body.classList.add('no-overlay');
+    }
+  });

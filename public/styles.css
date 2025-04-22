@@ -26,37 +26,50 @@ body {
     background: transparent;
   }
 
-  /* full‑screen overlay */
-#initialOverlay {
+  #initialOverlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100vw; height: 100vh;
-    background-color: rgba(0, 0, 255, 0.9); /* blueish overlay */
+    inset: 0; /* top:0; right:0; bottom:0; left:0; */
+    background: rgba(0, 0, 255, 0.9);
     display: flex;
-    justify-content: center;
     align-items: center;
+    justify-content: center;
     z-index: 9999;
-    opacity: 1;
-    transition: opacity 1s ease;
     pointer-events: none;
+    animation: fadeOverlay 1s ease 1s forwards;
   }
   
-  /* the overlay logo starts centered at scale=1 */
-  #initialLogo {
-    width: 150px; /* or whatever initial size you like */
-    transition: transform 1s ease;
+  /* logo in the center, will fly into header */
+  #introLogo {
+    width: 200px;       /* starting size */
     transform-origin: center center;
+    animation: flyLogo 1s ease forwards;
   }
   
-  /* hide the real header logo during the animation */
-  .site-logo {
+  /* header logo starts hidden; we’ll reveal it when the overlay goes away */
+  #headerLogo {
     opacity: 0;
-    transition: opacity 0.3s ease 1s; /* fade in after the move is done */
+    transition: opacity 0.2s ease;
   }
   
-  /* once we add .hidden to the overlay, it will fade out */
-  #initialOverlay.hidden {
-    opacity: 0;
+  /* once the overlay has faded, show the real logo */
+  .no-overlay #headerLogo {
+    opacity: 1;
+  }
+
+  /* keyframes for the logo: center → top center */
+@keyframes flyLogo {
+    to {
+      /* 
+        Move it up to roughly the header. 
+        Adjust ‘top’ to match header height, scale to final width ratio.
+      */
+      transform: translateY(-40vh) scale(0.35);
+    }
+  }
+  
+  /* fade out the blue overlay */
+  @keyframes fadeOverlay {
+    to { opacity: 0; visibility: hidden; }
   }
 
   .header-container {
