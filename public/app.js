@@ -28,8 +28,8 @@
     let imagesReady = 0;
     function checkReady() {
       if (++imagesReady < 3) return;
-      // 2s minimum
-      const wait = Math.max(2000 - (Date.now() - start), 0);
+      // 3s minimum
+      const wait = Math.max(3000 - (Date.now() - start), 0);
       setTimeout(doTransition, wait);
     }
   
