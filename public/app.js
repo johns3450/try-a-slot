@@ -28,8 +28,8 @@
     let imagesReady = 0;
     function checkReady() {
       if (++imagesReady < 3) return;
-      // 2s minimum
-      const wait = Math.max(2000 - (Date.now() - start), 0);
+      // 3s minimum
+      const wait = Math.max(3000 - (Date.now() - start), 0);
       setTimeout(doTransition, wait);
     }
   
@@ -41,38 +41,50 @@
     });
   
     function doTransition() {
-      const destR = finalLogo.getBoundingClientRect();
-      const srcR  = splashImg.getBoundingClientRect();
-      const ovR   = overlay.getBoundingClientRect();
-  
-      const cx = ovR.left + ovR.width/2;
-      const cy = ovR.top  + ovR.height/2;
-      const dx = (destR.left + destR.width/2)  - cx;
-      const dy = (destR.top  + destR.height/2) - cy;
-      const scale = destR.width / srcR.width;
-  
-      // animate
-      splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      overlay.classList.add('hidden');
-  
-      // as soon as the zoom ends, reveal the header logo
-      splashImg.addEventListener('transitionend', e => {
-        if (e.propertyName === 'transform') {
-          finalLogo.style.visibility = 'visible';
-        }
-      }, { once: true });
-  
-      // when the background fade completes, remove the overlay
-      overlay.addEventListener('transitionend', e => {
-        if (e.propertyName === 'background-color') {
-          overlay.remove();
-        }
-      }, { once: true });
-  
-      // mark it done
-      setSplashCookie();
-    }
-  })();
+        const destR = finalLogo.getBoundingClientRect();
+        const srcR  = splashImg.getBoundingClientRect();
+        const ovR   = overlay.getBoundingClientRect();
+      
+        const cx    = ovR.left + ovR.width/2;
+        const cy    = ovR.top  + ovR.height/2;
+        const dx    = (destR.left + destR.width/2)  - cx;
+        const dy    = (destR.top  + destR.height/2) - cy;
+        const finalScale = destR.width / srcR.width;
+      
+        // step 1: zoom out to 0.9×
+        splashImg.style.transition = 'transform 150ms ease';
+        splashImg.style.transform  = 'translate(0,0) scale(0.9)';
+      
+        setTimeout(() => {
+          // step 2: zoom in to 1.1×
+          splashImg.style.transition = 'transform 150ms ease';
+          splashImg.style.transform  = 'translate(0,0) scale(1.1)';
+      
+          setTimeout(() => {
+            // step 3: move+scale into place
+            splashImg.style.transition = 'transform 200ms ease';
+            splashImg.style.transform  = `translate(${dx}px, ${dy}px) scale(${finalScale})`;
+            // fade the background simultaneously
+            overlay.classList.add('hidden');
+      
+            // reveal header‐logo as soon as the last transform finishes
+            splashImg.addEventListener('transitionend', e => {
+              if (e.propertyName === 'transform') {
+                finalLogo.style.visibility = 'visible';
+              }
+            }, { once: true });
+      
+            // remove overlay when its background fade is done
+            overlay.addEventListener('transitionend', e => {
+              if (e.propertyName === 'background-color') {
+                overlay.remove();
+              }
+            }, { once: true });
+      
+            setSplashCookie();
+          }, 150);
+        }, 150);
+      }
   
   
 
