@@ -39,13 +39,13 @@ body {
   }
   
   /* the splash logo, starts centered & full‑size */
-  .overlay-logo {
-    /* same natural size as your header logo */
-    width: auto; height: 70px;
+  /* make sure the splash img is treated as a block so centering is pixel‑perfect */
+.overlay-logo {
+    display: block;
     transform-origin: center center;
-    /* set up for JS‑driven transition */
     transition: transform 0.5s ease;
   }
+  
   
   /* fade‑out helper */
   #initialOverlay.hidden {

@@ -200,54 +200,63 @@
 
   <script>
     (function(){
-      // only show once per user
+      const overlay   = document.getElementById('initialOverlay');
+      const splashImg = overlay.querySelector('.overlay-logo');
+      const finalLogo = document.querySelector('.site-logo');
+    
+      // If we've already shown the splash, just kill it and show the real logo
       if (localStorage.getItem('splashShown')) {
-        document.getElementById('initialOverlay').remove();
+        overlay.remove();
+        finalLogo.style.visibility = 'visible';
         return;
       }
     
-      const overlay = document.getElementById('initialOverlay');
-      const splashImg = overlay.querySelector('.overlay-logo');
-      const finalImg = document.querySelector('.site-logo');
+      // Hide the header logo until the animation finishes
+      finalLogo.style.visibility = 'hidden';
     
-      const startTime = Date.now();
+      // Track when everything is loaded
+      let hasLoaded = false;
+      window.addEventListener('load', () => { hasLoaded = true; });
     
-      function doTransition(){
-        // measure
-        const dest = finalImg.getBoundingClientRect();
-        const vw = window.innerWidth, vh = window.innerHeight;
+      function doTransition() {
+        // Measure where the header logo lives
+        const destRect   = finalLogo.getBoundingClientRect();
         const splashRect = splashImg.getBoundingClientRect();
+        const vw = window.innerWidth, vh = window.innerHeight;
     
-        // compute deltas from center
-        const dx = (dest.left + dest.width/2) - (vw/2);
-        const dy = (dest.top  + dest.height/2) - (vh/2);
-        const scale = dest.width / splashRect.width;
+        // Compute the needed translation from center → header position
+        const dx    = (destRect.left + destRect.width/2) - (vw/2);
+        const dy    = (destRect.top  + destRect.height/2) - (vh/2);
+        const scale = destRect.width / splashRect.width;
     
-        // trigger the move+scale
-        splashImg.style.transform = 
-          `translate(${dx}px, ${dy}px) scale(${scale})`;
-    
-        // fade out the overlay
+        // Kick off the zoom
+        splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+        // And fade the overlay out
         overlay.classList.add('hidden');
     
-        // cleanup after animation
-        overlay.addEventListener('transitionend', function onEnd(e){
+        // When the fade is done, remove the overlay and show the real logo
+        overlay.addEventListener('transitionend', e => {
           if (e.propertyName === 'opacity') {
+            finalLogo.style.visibility = 'visible';
             overlay.remove();
           }
-        });
+        }, { once: true });
     
+        // Never run again
         localStorage.setItem('splashShown', '1');
       }
     
-      // wait for everything loaded
-      window.addEventListener('load', () => {
-        const elapsed = Date.now() - startTime;
-        const wait = Math.max(0, 2000 - elapsed);
-        setTimeout(doTransition, wait);
-      });
+      // Wait at least 2 s, then:
+      // – if content is already loaded, run immediately  
+      // – otherwise wait for the load event
+      setTimeout(() => {
+        if (hasLoaded) doTransition();
+        else window.addEventListener('load', doTransition);
+      }, 2000);
+    
     })();
-    </script>    
+    </script>
+    
 
   <script src="app.js"></script>
 </body>
