@@ -61,9 +61,12 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
   width="175"
   style="width:100%; max-width:175px; height:auto; margin:0 auto 20px; display:block;"
 />
-                    <h2>Verify Your Email 🚀</h2>
+                    <h2>Verify Your Email</h2>
+                     <p>
+                        Hi there,
+                    </p>
                     <p>
-                        Please verify your email for <strong>TRY'A'SLOT</strong> by clicking the button below:
+                        Please verify your email for <strong>TRY'A'SLOT</strong> by clicking the link below.
                     </p>
                     <p style="text-align:center;">
                         <a
@@ -94,10 +97,10 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
                         ${verificationUrl}
                     </p>
                     <p style="font-size:12px;color:#ccc;margin-top:30px;">
-  Didn't request this email?
+  If you didn't request this, ignore this email or 
   <a href="https://tryaslot.com/delete.html?email=${toEmail}" style="color:#ccc;text-decoration:none;">
-    Click here
-  </a> to permanently remove all data associated with your email.
+    click here
+  </a> to permanently delete your data.
 </p>
                 </div>
             </div>
