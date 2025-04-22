@@ -269,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-// Show spinner
 function showSpinner() {
     const spinner = document.getElementById('spinner');
     const message = document.getElementById('spinner-message');
@@ -282,11 +281,10 @@ function showSpinner() {
           message.classList.remove('hidden');
           message.classList.add('show');
         }
-      }, 1000);
+      }, 10000);
     }
   }
   
-  // Hide spinner
   function hideSpinner() {
     const spinner = document.getElementById('spinner');
     const message = document.getElementById('spinner-message');
@@ -486,7 +484,7 @@ function showSpinner() {
             card.setAttribute('data-category', game.type_slug || 'misc');
             card.innerHTML = `<img src="${game.thumb}" alt="${game.name}"><p>${game.name}</p>`;
             card.addEventListener('click', () => {
-                if (!localStorage.getItem('tryaslot-email')) {
+                if (!userEmail) {
                     emailModal.classList.remove('hidden');
                 } else {
                     const embedUrl = `https://slotslaunch.com/iframe/${game.id}?token=RbG9QL8cCFe376wMMYFzU19hNWTmT5uTNHcQ2WUgWdnv90PXxd`;
