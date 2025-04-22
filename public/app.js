@@ -4,6 +4,7 @@
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
+    // skip if already shown
     if (localStorage.getItem('splashShown')) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
@@ -21,12 +22,20 @@
       const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
       const scale = dest.width / src.width;
   
+      // start zoom + background fade
       splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
       overlay.classList.add('hidden');
   
-      overlay.addEventListener('transitionend', e => {
-        if (e.propertyName === 'opacity') {
+      // 1) when the zoom on the splash image is done → show header logo
+      splashImg.addEventListener('transitionend', e => {
+        if (e.propertyName === 'transform') {
           finalLogo.style.visibility = 'visible';
+        }
+      }, { once: true });
+  
+      // 2) when the overlay background finishes fading → remove it
+      overlay.addEventListener('transitionend', e => {
+        if (e.propertyName === 'background-color') {
           overlay.remove();
         }
       }, { once: true });
@@ -34,8 +43,10 @@
       localStorage.setItem('splashShown', '1');
     }
   
+    // wait at least 2 s AND for load
     setTimeout(() => {
-      hasLoaded ? doTransition() : window.addEventListener('load', doTransition);
+      if (hasLoaded) doTransition();
+      else window.addEventListener('load', doTransition);
     }, 2000);
   })();
   

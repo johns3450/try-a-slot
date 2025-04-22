@@ -26,33 +26,29 @@ body {
     background: transparent;
   }
 
-  /* full‑screen dark background */
+/* fade the background only (not the logo) */
 #initialOverlay {
-    position: fixed;
-    top: 0; left: 0;
+    position: fixed; top: 0; left: 0;
     width: 100vw; height: 100vh;
-    background: rgba(17,17,17,0.9);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
+    background-color: rgba(17,17,17,0.9);
+    transition: background-color 0.5s ease;
     z-index: 9999;
   }
   
-  /* the splash logo, starts centered & full‑size */
-  /* make sure the splash img is treated as a block so centering is pixel‑perfect */
-.overlay-logo {
+  /* when hidden, make the overlay transparent & non‑interactive */
+  #initialOverlay.hidden {
+    background-color: rgba(17,17,17,0);
+    pointer-events: none;
+  }
+  
+  /* your splash logo only needs the transform transition */
+  .overlay-logo {
     display: block;
     transform-origin: center center;
     transition: transform 0.5s ease;
   }
   
-  
-  /* fade‑out helper */
-  #initialOverlay.hidden {
-    opacity: 0;
-    transition: opacity 0.5s ease;
-    pointer-events: none;
-  }
   
 
   .header-container {
