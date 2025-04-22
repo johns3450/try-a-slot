@@ -133,6 +133,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 choices,
                 searchEnabled: true,
                 shouldSort: false,
+                renderChoiceLimit: -1,
+                searchResultLimit: -1,  
                 searchFields: ['value', 'label'],
                 fuseOptions: {
                     keys: ['label'],
