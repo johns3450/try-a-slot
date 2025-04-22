@@ -21,13 +21,14 @@
 </head>
 <body>
     <div id="initialOverlay">
-        <img id="introLogo" src="assets/logo.png" alt="Loading logo" />
+        <img src="assets/logo.png" class="overlay-logo" alt="Logo splash">
       </div>
+
     
-      <header>
+    <header>
         <div class="header-container">
           <div class="logo-container">
-            <img id="headerLogo" src="assets/logo.png" alt="Site logo" class="site-logo" />
+            <img src="assets/logo.png" alt="Try'A'Slot Logo" class="site-logo" />
           </div>
           <div id="userProfile" class="person-icon">
             <i class="fi fi-sr-user"></i>
@@ -196,6 +197,57 @@
   <button id="backToTop" aria-label="Back to top">
     <i class="fi fi-sr-angle-up" aria-hidden="true"></i>
   </button>
+
+  <script>
+    (function(){
+      // only show once per user
+      if (localStorage.getItem('splashShown')) {
+        document.getElementById('initialOverlay').remove();
+        return;
+      }
+    
+      const overlay = document.getElementById('initialOverlay');
+      const splashImg = overlay.querySelector('.overlay-logo');
+      const finalImg = document.querySelector('.site-logo');
+    
+      const startTime = Date.now();
+    
+      function doTransition(){
+        // measure
+        const dest = finalImg.getBoundingClientRect();
+        const vw = window.innerWidth, vh = window.innerHeight;
+        const splashRect = splashImg.getBoundingClientRect();
+    
+        // compute deltas from center
+        const dx = (dest.left + dest.width/2) - (vw/2);
+        const dy = (dest.top  + dest.height/2) - (vh/2);
+        const scale = dest.width / splashRect.width;
+    
+        // trigger the move+scale
+        splashImg.style.transform = 
+          `translate(${dx}px, ${dy}px) scale(${scale})`;
+    
+        // fade out the overlay
+        overlay.classList.add('hidden');
+    
+        // cleanup after animation
+        overlay.addEventListener('transitionend', function onEnd(e){
+          if (e.propertyName === 'opacity') {
+            overlay.remove();
+          }
+        });
+    
+        localStorage.setItem('splashShown', '1');
+      }
+    
+      // wait for everything loaded
+      window.addEventListener('load', () => {
+        const elapsed = Date.now() - startTime;
+        const wait = Math.max(0, 2000 - elapsed);
+        setTimeout(doTransition, wait);
+      });
+    })();
+    </script>    
 
   <script src="app.js"></script>
 </body>

@@ -1,4 +1,37 @@
+if (!localStorage.getItem('initialOverlayShown')) {
+    const overlay = document.getElementById('initialOverlay');
+  
+    const loadPromise = new Promise(resolve => {
+      if (document.readyState === 'complete') {
+        resolve();
+      } else {
+        window.addEventListener('load', resolve);
+      }
+    });
+  
+    const logoImg = document.getElementById('logoImg');
+    const logoPromise = logoImg
+      ? (logoImg.complete
+          ? Promise.resolve()
+          : new Promise(res => logoImg.addEventListener('load', res)))
+      : Promise.resolve();
+  
+    const fontPromise = (document.fonts && document.fonts.ready)
+      ? document.fonts.ready
+      : Promise.resolve();
 
+    Promise.all([loadPromise, logoPromise, fontPromise])
+      .then(() => {
+        overlay.classList.add('hidden');
+        overlay.addEventListener('transitionend', () => {
+          overlay.remove();
+          localStorage.setItem('initialOverlayShown', 'true');
+        }, { once: true });
+      });
+  
+} else {
+    document.getElementById('initialOverlay')?.remove();
+}
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
@@ -692,47 +725,3 @@ if (window.location.pathname === '/' || window.location.pathname === '/index.htm
       window.scrollTo({ top: 0, behavior: 'smooth' });
     });
 }
-
-window.addEventListener('load', () => {
-    const seen = localStorage.getItem('initialOverlayShown');
-    const overlay   = document.getElementById('initialOverlay');
-    const introLogo = document.getElementById('introLogo');
-    const headerLogo= document.getElementById('headerLogo');
-  
-    if (!seen) {
-      // 2s delay so overlay always stays up a bit
-      setTimeout(() => {
-        // measure where headerLogo ends up
-        const targetRect  = headerLogo.getBoundingClientRect();
-        const startRect   = introLogo.getBoundingClientRect();
-        const dx = (targetRect.left + targetRect.width/2)
-                 - (startRect.left  + startRect.width/2);
-        const dy = (targetRect.top  + targetRect.height/2)
-                 - (startRect.top   + startRect.height/2);
-        const scale = targetRect.width / startRect.width;
-  
-        // kick off the 1s transitions
-        // ‑ move & scale logo
-        introLogo.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-        // ­ fade out overlay
-        overlay.style.opacity = '0';
-  
-        // once the *overlay* opacity transition ends...
-        overlay.addEventListener('transitionend', e => {
-          if (e.propertyName === 'opacity') {
-            // remove overlay, reveal header logo, mark seen
-            document.body.classList.add('no-overlay');
-            overlay.remove();
-            localStorage.setItem('initialOverlayShown','1');
-          }
-        }, { once: true });
-  
-      }, 2000);
-  
-    } else {
-      // subsequent loads: just ditch overlay, show header immediately
-      overlay.remove();
-      document.body.classList.add('no-overlay');
-    }
-  });
-  
