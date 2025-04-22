@@ -59,7 +59,7 @@
             placeholder="Search slots..."
             autocomplete="off"
             enterkeyhint="search"
-            inputmode="search"
+            inputmode="text"
           />
           <button type="submit" class="search-icon" aria-label="Search">
             <i class="fi fi-rr-search" aria-hidden="true"></i>
@@ -132,7 +132,13 @@
       <div id="emailInputState">
         <div class="modal-body">
           <h2>Enter your email to play</h2>
-          <input type="email" id="userEmail" placeholder="your@email.com" />
+          <input
+            type="email"
+            id="userEmail"
+            placeholder="your@email.com"
+            enterkeyhint="go"
+            autocomplete="email"
+          />
         </div>
         <div class="modal-footer">
           <button id="emailSubmit"><i class="fi fi-sr-play"></i>Play Now</button>
@@ -151,10 +157,12 @@
             <button type="button" id="refreshCaptcha">↻</button>
           </div>
           <input
-            type="text"
-            id="captchaInput"
-            placeholder="Enter the letters above"
-            autocomplete="off"
+           type="text"
+           id="captchaInput"
+           placeholder="Enter the letters above"
+           autocomplete="off"
+           enterkeyhint="go"
+           inputmode="text"
           />
         </div>
         <div class="modal-footer">

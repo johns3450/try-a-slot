@@ -655,6 +655,8 @@ input#userEmail {
 }
 
 #refreshCaptcha {
+    appearance: none;
+    -webkit-appearance: none;
     position: absolute;
     top: 50%;
     left: 90%;
