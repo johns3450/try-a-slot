@@ -52,17 +52,17 @@
         const finalScale = destR.width / srcR.width;
       
         // step 1: zoom out to 0.9×
-        splashImg.style.transition = 'transform 150ms ease';
+        splashImg.style.transition = 'transform 200ms ease';
         splashImg.style.transform  = 'translate(0,0) scale(0.9)';
       
         setTimeout(() => {
           // step 2: zoom in to 1.1×
-          splashImg.style.transition = 'transform 150ms ease';
-          splashImg.style.transform  = 'translate(0,0) scale(1.1)';
+          splashImg.style.transition = 'transform 300ms ease';
+          splashImg.style.transform  = 'translate(0,0) scale(1.2)';
       
           setTimeout(() => {
             // step 3: move+scale into place
-            splashImg.style.transition = 'transform 200ms ease';
+            splashImg.style.transition = 'transform 500ms ease';
             splashImg.style.transform  = `translate(${dx}px, ${dy}px) scale(${finalScale})`;
             // fade the background simultaneously
             overlay.classList.add('hidden');
