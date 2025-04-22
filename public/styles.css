@@ -216,6 +216,15 @@ body {
     border: none;
     appearance: none;
     -webkit-appearance: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+  }
+
+  .search-icon i {
+    font-size: 18px;
+    line-height: 1;
   }
 
   div#noResultsMessage {
@@ -651,6 +660,11 @@ input#userEmail {
 
 .choices__list--single {
     padding: 0 !important;
+}
+
+.choices {
+    min-height: 35px;
+    width: 100%;
 }
 
   .flag-icon {

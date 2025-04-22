@@ -1,78 +1,104 @@
-// === splash screen IIFE, cookie edition ===
 (function(){
     const overlay   = document.getElementById('initialOverlay');
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
-    // 1) cookie helpers
     function hasSplashCookie() {
       return document.cookie
         .split('; ')
         .some(pair => pair.startsWith('splashShown=1'));
     }
     function setSplashCookie() {
-      // 1 year expiry
       document.cookie = 'splashShown=1; max-age=' + (365*24*60*60) + '; path=/';
     }
   
-    // 2) skip if already done
     if (hasSplashCookie()) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
       return;
     }
   
-    // 3) hide real logo until we’re ready
     finalLogo.style.visibility = 'hidden';
     const start = Date.now();
-    let imagesReady = 0;
+    let itemsReady = 0;
+
     function checkReady() {
-      if (++imagesReady < 3) return;
+      if (++itemsReady < 5) return;
       // 3s minimum
       const wait = Math.max(3000 - (Date.now() - start), 0);
       setTimeout(doTransition, wait);
     }
-  
-    // 4) wait for DOM + both logos
+
     document.addEventListener('DOMContentLoaded', checkReady);
     [ splashImg, finalLogo ].forEach(img => {
       if (img.complete) checkReady();
       else img.addEventListener('load', checkReady);
     });
-  
+
+    const icons = document.querySelectorAll('i');
+    if (icons.length === 0) {
+      checkReady();
+    } else {
+      let loadedIcons = 0;
+      icons.forEach(icon => {
+        const observer = new MutationObserver(() => {
+          loadedIcons++;
+          if (loadedIcons >= icons.length) {
+            checkReady();
+          }
+        });
+        observer.observe(icon, { attributes: true, childList: true, subtree: true });
+      });
+    }
+
+    const textBlocks = overlay.querySelectorAll('h1, h2, p');
+    if (textBlocks.length === 0) {
+      checkReady();
+    } else {
+      textBlocks.forEach(block => {
+        if (block.textContent.trim()) {
+          checkReady();
+        } else {
+          const observer = new MutationObserver(() => {
+            if (block.textContent.trim()) {
+              observer.disconnect();
+              checkReady();
+            }
+          });
+          observer.observe(block, { childList: true });
+        }
+      });
+    }
+
     function doTransition() {
       const destR = finalLogo.getBoundingClientRect();
       const srcR  = splashImg.getBoundingClientRect();
       const ovR   = overlay.getBoundingClientRect();
-  
+
       const cx = ovR.left + ovR.width/2;
       const cy = ovR.top  + ovR.height/2;
       const dx = (destR.left + destR.width/2)  - cx;
       const dy = (destR.top  + destR.height/2) - cy;
       const scale = destR.width / srcR.width;
-  
-      // animate
+
       splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
       overlay.classList.add('hidden');
-  
-      // as soon as the zoom ends, reveal the header logo
+
       splashImg.addEventListener('transitionend', e => {
         if (e.propertyName === 'transform') {
           finalLogo.style.visibility = 'visible';
         }
       }, { once: true });
-  
-      // when the background fade completes, remove the overlay
+
       overlay.addEventListener('transitionend', e => {
         if (e.propertyName === 'background-color') {
           overlay.remove();
         }
       }, { once: true });
-  
-      // mark it done
+
       setSplashCookie();
     }
-  })();   
+})(); 
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';

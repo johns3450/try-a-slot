@@ -28,6 +28,9 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
         from: { email: process.env.SENDER_EMAIL, name: "TRY'A'SLOT" },
         subject: "Verify Your Email for TRY'A'SLOT",
         text: `Please verify your email by clicking this link: ${verificationUrl}`,
+        headers: {
+            "List-Unsubscribe": `<https://tryaslot.com/delete.html?email=${toEmail}>`
+          },
         html: `
             <!-- Pre‑header: hidden snippet for inbox preview -->
             <div style="
@@ -97,7 +100,7 @@ async function sendVerificationEmail(toEmail, verificationUrl) {
                         ${verificationUrl}
                     </p>
                     <p style="font-size:12px;color:#ccc;margin-top:30px;">
-  If you didn't request this, ignore this email or 
+  Didn't request this? Ignore this email or 
   <a href="https://tryaslot.com/delete.html?email=${toEmail}" style="color:#ccc;text-decoration:none;">
     click here
   </a> to permanently delete your data.
