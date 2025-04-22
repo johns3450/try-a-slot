@@ -546,7 +546,7 @@ input#userEmail {
     }
 
     .choices__list--dropdown {
-        max-height: clamp(100px, 25vh, 350px);
+        max-height: none;
         overflow-y: auto;
         transform-origin: top center;
         transition: transform 0.3s ease;
@@ -556,7 +556,7 @@ input#userEmail {
       }
 
       .choices__list--dropdown .choices__list {
-        max-height: clamp(100px, 25vh, 350px) !important;
+        max-height: none !important;
         overflow-y: auto !important;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
