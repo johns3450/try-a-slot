@@ -1,39 +1,33 @@
-// === splash screen IIFE, cookie edition ===
 (function(){
     const overlay   = document.getElementById('initialOverlay');
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
-    // 1) cookie helpers
     function hasSplashCookie() {
       return document.cookie
         .split('; ')
         .some(pair => pair.startsWith('splashShown=1'));
     }
     function setSplashCookie() {
-      // 1 year expiry
+
       document.cookie = 'splashShown=1; max-age=' + (365*24*60*60) + '; path=/';
     }
   
-    // 2) skip if already done
     if (hasSplashCookie()) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
       return;
     }
   
-    // 3) hide real logo until we’re ready
     finalLogo.style.visibility = 'hidden';
     const start = Date.now();
     let imagesReady = 0;
     function checkReady() {
       if (++imagesReady < 3) return;
-      // 3s minimum
       const wait = Math.max(3000 - (Date.now() - start), 0);
       setTimeout(doTransition, wait);
     }
   
-    // 4) wait for DOM + both logos
     document.addEventListener('DOMContentLoaded', checkReady);
     [ splashImg, finalLogo ].forEach(img => {
       if (img.complete) checkReady();
@@ -51,25 +45,21 @@
       const dy = (destR.top  + destR.height/2) - cy;
       const scale = destR.width / srcR.width;
   
-      // animate
       splashImg.style.transform = translate(${dx}px, ${dy}px) scale(${scale});
       overlay.classList.add('hidden');
   
-      // as soon as the zoom ends, reveal the header logo
       splashImg.addEventListener('transitionend', e => {
         if (e.propertyName === 'transform') {
           finalLogo.style.visibility = 'visible';
         }
       }, { once: true });
   
-      // when the background fade completes, remove the overlay
       overlay.addEventListener('transitionend', e => {
         if (e.propertyName === 'background-color') {
           overlay.remove();
         }
       }, { once: true });
   
-      // mark it done
       setSplashCookie();
     }
   })();  

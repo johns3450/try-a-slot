@@ -26,10 +26,9 @@ body {
     background: transparent;
   }
 
-/* fade the background only (not the logo) */
 #initialOverlay {
     position: fixed;
-    top: 0; bottom: 0;  /* fill exactly the flippable viewport */
+    top: 0; bottom: 0;
   left: 0; right: 0;
     display: flex; align-items: center; justify-content: center;
     background-color: rgba(17,17,17,0.95);
@@ -37,30 +36,26 @@ body {
     z-index: 9999;
   }
   
-  /* when hidden, make the overlay transparent & non‑interactive */
   #initialOverlay.hidden {
     background-color: rgba(17,17,17,0);
     pointer-events: none;
   }
   
-  /* your splash logo only needs the transform transition */
   .overlay-logo {
     display: block;
     transform-origin: center center;
     transition: transform 0.5s ease;
-    width: 260px;
+    height: 210px;
   }
   
   @media (max-width: 600px) {
     .overlay-logo {
+      min-height: 70px; 
       width: 80%;
-      max-width: 220px;         /* shrink more on phones */
+      max-height: 170px;
     }
   }
   
-  
-  
-
   .header-container {
     display: flex;
     justify-content: center;
