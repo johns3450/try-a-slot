@@ -114,10 +114,6 @@ document.addEventListener('DOMContentLoaded', () => {
           const top = [], rest = [];
       
           list.forEach(c => {
-            if (!c.cca2 || !c.name?.common) {
-              console.warn('Invalid country data:', c);
-              return; // Skip invalid entries
-            }
             const countryData = {
               value: c.cca2,
               label: c.name.common,
@@ -129,19 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
           });
       
           rest.sort((a, b) => a.label.localeCompare(b.label));
-          const choices = [
-            {
-              value: '',
-              label: 'Select your country',
-              placeholder: true,
-              customProperties: { flagUrl: '' }
-            },
-            ...top,
-            ...rest
-          ];
+          const choices = [...top, ...rest];
       
           const countrySelect = document.getElementById('countrySelector');
-          countrySelect.innerHTML = ''; // Clear any existing <option> tags
       
           const countryChoice = new Choices(countrySelect, {
             choices,
@@ -154,28 +140,26 @@ document.addEventListener('DOMContentLoaded', () => {
               ignoreLocation: true,
               getFn: option => option.label
             },
-            placeholder: false, // Disable automatic placeholder
+            placeholder: true,
+            placeholderValue: 'Select your country',
             searchPlaceholderValue: 'Type to search…',
             allowHTML: true,
             itemSelectText: '',
             callbackOnCreateTemplates: function (template) {
-              return {
-                option: (classNames, data) => {
-                  if (!data.customProperties) {
-                    console.warn('Missing customProperties in option:', data);
+                return {
+                  option: (classNames, data) => {
+                    const flagUrl = data.customProperties?.flagUrl || '';
+                    const flag = flagUrl
+                      ? `<img src="${flagUrl}" class="flag-icon" alt="" />`
+                      : '';
+                    return template(`
+                      <div class="${classNames.item} ${classNames.itemChoice}" data-select-text="" data-choice data-choice-selectable data-id="${data.id}" data-value="${data.value}" ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'role="option"'}>
+                        ${flag} ${data.label}
+                      </div>
+                    `);
                   }
-                  const flagUrl = data.customProperties?.flagUrl || '';
-                  const flag = flagUrl
-                    ? `<img src="${flagUrl}" class="flag-icon" alt="" />`
-                    : '';
-                  return template(`
-                    <div class="${classNames.item} ${classNames.itemChoice}" data-select-text="" data-choice data-choice-selectable data-id="${data.id}" data-value="${data.value}" ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'role="option"'}>
-                      ${flag} ${data.label}
-                    </div>
-                  `);
-                }
-              };
-            }
+                };
+              }              
           });
       
           countrySelect.addEventListener('change', () => {
