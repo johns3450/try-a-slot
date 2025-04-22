@@ -106,8 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function populateCountrySelector() {
         try {
-            const res = await fetch('/countries.json');
-            const list = await res.json();
+            const res = await fetch('https://api.tryaslot.com/api/countries');
             if (!res.ok) throw new Error('Failed to fetch countries');
             const list = await res.json();
             const PRIORITY = ['GB', 'US'];
