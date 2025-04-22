@@ -106,65 +106,57 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function populateCountrySelector() {
         try {
-          const res = await fetch('/countries.json');
-          if (!res.ok) throw new Error('Failed to fetch countries');
-          const list = await res.json();
-      
-          const PRIORITY = ['GB', 'US'];
-          const top = [], rest = [];
-      
-          list.forEach(c => {
-            const label = c.name.common;
-            const flag = c.flags.png;
-            const entry = {
-              value: c.cca2,
-              label,
-              customProperties: { flag }
-            };
-            (PRIORITY.includes(c.cca2) ? top : rest).push(entry);
-          });
-      
-          rest.sort((a, b) => a.label.localeCompare(b.label));
-      
-          const choices = [...top, ...rest];
-      
-          const countrySelect = document.getElementById('countrySelector');
-          const countryChoice = new Choices(countrySelect, {
-            choices,
-            searchEnabled: true,
-            shouldSort: false,
-            searchFields: ['value', 'label'],
-            placeholder: true,
-            placeholderValue: 'Select your country',
-            searchPlaceholderValue: 'Type to search…',
-            allowHTML: true,
-            itemSelectText: ''
-          });
-      
-          // Inject flag image on dropdown open
-          countrySelect.addEventListener('showDropdown', () => {
-            document.querySelectorAll('.choices__item--choice').forEach(el => {
-              const raw = el.getAttribute('data-custom-properties');
-              if (raw) {
-                const { flag } = JSON.parse(raw);
-                if (flag && !el.innerHTML.includes('flag-icon')) {
-                  el.innerHTML = `<img class="flag-icon" src="${flag}" style="width:20px; margin-right:8px; vertical-align:middle;" /> ${el.innerText}`;
-                }
-              }
+            const res = await fetch('/countries.json');
+            if (!res.ok) throw new Error('Failed to fetch countries');
+            const list = await res.json(); // ✅ only call this once
+    
+            const PRIORITY = ['GB', 'US'];
+            const top = [], rest = [];
+    
+            list.forEach(c => {
+                const label = `<img class="flag-icon" src="${c.flags.png}" /> ${c.name.common}`;
+                (PRIORITY.includes(c.cca2) ? top : rest).push({ value: c.cca2, label });
             });
-          });
-      
-          countrySelect.addEventListener('change', () => {
-            if (countrySelect.value) {
-              countryChoice.setChoiceByValue(countrySelect.value);
-              countrySelect.parentNode.classList.add('has-value');
-            }
-          });
-      
+    
+            rest.sort((a, b) =>
+                a.label.replace(/<[^>]*>/g, '')
+                    .localeCompare(b.label.replace(/<[^>]*>/g, ''))
+            );
+    
+            const choices = [
+                ...top,
+                ...rest
+            ];
+    
+            const countrySelect = document.getElementById('countrySelector');
+            const countryChoice = new Choices(countrySelect, {
+                choices,
+                searchEnabled: true,
+                shouldSort: false,
+                searchFields: ['value', 'label'],
+                fuseOptions: {
+                    keys: ['label'],
+                    threshold: 0.3,
+                    ignoreLocation: true,
+                    getFn: option => option.label.replace(/<[^>]*>/g, '')
+                },
+                placeholder: true,
+                placeholderValue: 'Select your country',
+                searchPlaceholderValue: 'Type to search…',
+                allowHTML: true,
+                itemSelectText: ''
+            });
+    
+            countrySelect.addEventListener('change', () => {
+                if (countrySelect.value) {
+                    countryChoice.setChoiceByValue(countrySelect.value);
+                    countrySelect.parentNode.classList.add('has-value');
+                }
+            });
         } catch (err) {
-          console.error('Error populating country selector:', err);
+            console.error('Error populating country selector:', err);
         }
-      }        
+    }    
 
     function generateCaptchaText() {
         const chars = 'ABCDEFGHJKMNPRSTUVWXYZabcdefghjkmnprstuvwxyz';
