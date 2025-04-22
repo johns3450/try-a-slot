@@ -146,19 +146,20 @@ document.addEventListener('DOMContentLoaded', () => {
             allowHTML: true,
             itemSelectText: '',
             callbackOnCreateTemplates: function (template) {
-              return {
-                option: (classNames, data) => {
-                  const flag = data.customProperties?.flagUrl
-                    ? `<img src="${data.customProperties.flagUrl}" class="flag-icon" alt="" />`
-                    : '';
-                  return template(`
-                    <div class="${classNames.item} ${classNames.itemChoice}" data-select-text="" data-choice data-choice-selectable data-id="${data.id}" data-value="${data.value}" ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'role="option"'}>
-                      ${flag} ${data.label}
-                    </div>
-                  `);
-                }
-              };
-            }
+                return {
+                  option: (classNames, data) => {
+                    const flagUrl = data.customProperties && data.customProperties.flagUrl;
+                    const flag = flagUrl
+                      ? `<img src="${flagUrl}" class="flag-icon" alt="" />`
+                      : '';
+                    return template(`
+                      <div class="${classNames.item} ${classNames.itemChoice}" data-select-text="" data-choice data-choice-selectable data-id="${data.id}" data-value="${data.value}" ${data.disabled ? 'data-choice-disabled aria-disabled="true"' : 'role="option"'}>
+                        ${flag} ${data.label}
+                      </div>
+                    `);
+                  }
+                };
+              }              
           });
       
           countrySelect.addEventListener('change', () => {
