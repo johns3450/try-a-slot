@@ -198,65 +198,7 @@
     <i class="fi fi-sr-angle-up" aria-hidden="true"></i>
   </button>
 
-  <script>
-    (function(){
-      const overlay   = document.getElementById('initialOverlay');
-      const splashImg = overlay.querySelector('.overlay-logo');
-      const finalLogo = document.querySelector('.site-logo');
-    
-      // If we've already shown the splash, just kill it and show the real logo
-      if (localStorage.getItem('splashShown')) {
-        overlay.remove();
-        finalLogo.style.visibility = 'visible';
-        return;
-      }
-    
-      // Hide the header logo until the animation finishes
-      finalLogo.style.visibility = 'hidden';
-    
-      // Track when everything is loaded
-      let hasLoaded = false;
-      window.addEventListener('load', () => { hasLoaded = true; });
-    
-      function doTransition() {
-        // Measure where the header logo lives
-        const destRect   = finalLogo.getBoundingClientRect();
-        const splashRect = splashImg.getBoundingClientRect();
-        const vw = window.innerWidth, vh = window.innerHeight;
-    
-        // Compute the needed translation from center → header position
-        const dx    = (destRect.left + destRect.width/2) - (vw/2);
-        const dy    = (destRect.top  + destRect.height/2) - (vh/2);
-        const scale = destRect.width / splashRect.width;
-    
-        // Kick off the zoom
-        splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-        // And fade the overlay out
-        overlay.classList.add('hidden');
-    
-        // When the fade is done, remove the overlay and show the real logo
-        overlay.addEventListener('transitionend', e => {
-          if (e.propertyName === 'opacity') {
-            finalLogo.style.visibility = 'visible';
-            overlay.remove();
-          }
-        }, { once: true });
-    
-        // Never run again
-        localStorage.setItem('splashShown', '1');
-      }
-    
-      // Wait at least 2 s, then:
-      // – if content is already loaded, run immediately  
-      // – otherwise wait for the load event
-      setTimeout(() => {
-        if (hasLoaded) doTransition();
-        else window.addEventListener('load', doTransition);
-      }, 2000);
-    
-    })();
-    </script>
-    
+  
 
   <script src="app.js"></script>
 </body>

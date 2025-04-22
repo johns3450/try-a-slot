@@ -1,37 +1,44 @@
-if (!localStorage.getItem('initialOverlayShown')) {
-    const overlay = document.getElementById('initialOverlay');
+// === splash screen IIFE ===
+(function(){
+    const overlay   = document.getElementById('initialOverlay');
+    const splashImg = overlay.querySelector('.overlay-logo');
+    const finalLogo = document.querySelector('.site-logo');
   
-    const loadPromise = new Promise(resolve => {
-      if (document.readyState === 'complete') {
-        resolve();
-      } else {
-        window.addEventListener('load', resolve);
-      }
-    });
+    if (localStorage.getItem('splashShown')) {
+      overlay.remove();
+      finalLogo.style.visibility = 'visible';
+      return;
+    }
   
-    const logoImg = document.getElementById('logoImg');
-    const logoPromise = logoImg
-      ? (logoImg.complete
-          ? Promise.resolve()
-          : new Promise(res => logoImg.addEventListener('load', res)))
-      : Promise.resolve();
+    finalLogo.style.visibility = 'hidden';  
+    let hasLoaded = false;
+    window.addEventListener('load', () => { hasLoaded = true; });
   
-    const fontPromise = (document.fonts && document.fonts.ready)
-      ? document.fonts.ready
-      : Promise.resolve();
-
-    Promise.all([loadPromise, logoPromise, fontPromise])
-      .then(() => {
-        overlay.classList.add('hidden');
-        overlay.addEventListener('transitionend', () => {
+    function doTransition() {
+      const dest = finalLogo.getBoundingClientRect();
+      const src  = splashImg.getBoundingClientRect();
+      const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
+      const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
+      const scale = dest.width / src.width;
+  
+      splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+      overlay.classList.add('hidden');
+  
+      overlay.addEventListener('transitionend', e => {
+        if (e.propertyName === 'opacity') {
+          finalLogo.style.visibility = 'visible';
           overlay.remove();
-          localStorage.setItem('initialOverlayShown', 'true');
-        }, { once: true });
-      });
+        }
+      }, { once: true });
   
-} else {
-    document.getElementById('initialOverlay')?.remove();
-}
+      localStorage.setItem('splashShown', '1');
+    }
+  
+    setTimeout(() => {
+      hasLoaded ? doTransition() : window.addEventListener('load', doTransition);
+    }, 2000);
+  })();
+  
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
