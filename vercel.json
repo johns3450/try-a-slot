@@ -2,7 +2,10 @@
     "redirects": [
       {
         "source": "/(.*)",
-        "has": [{ "type": "host", "value": "tryaslot.com" }],
+        "has": [
+          { "type": "host", "value": "tryaslot.com" },
+          { "type": "protocol", "value": "http" }
+        ],
         "destination": "https://tryaslot.com/$1",
         "permanent": true
       }
