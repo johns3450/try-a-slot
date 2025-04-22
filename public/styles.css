@@ -139,8 +139,6 @@ body {
     overflow-x: auto;
     -ms-overflow-style: none;
     scrollbar-width: none;
-    scroll-padding-left: 1px;
-    padding-left: 1px;
   }
 
   .categories::-webkit-scrollbar {
@@ -865,12 +863,12 @@ input#captchaInput {
     background: #fff;
     border: none;
     color: #111;
-    font-size: 2rem;
+    font-size: 1.5rem;
     cursor: pointer;
     z-index: 10000;
     border-radius: 50%;
     opacity: 0.8;
-    padding-bottom: 4px;
+    padding-bottom: 2px;
     appearance: none;
     -webkit-appearance: none;
   }

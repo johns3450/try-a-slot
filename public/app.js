@@ -281,7 +281,7 @@ function showSpinner() {
           message.classList.remove('hidden');
           message.classList.add('show');
         }
-      }, 10000);
+      }, 5000);
     }
   }
   
@@ -485,6 +485,7 @@ function showSpinner() {
             card.innerHTML = `<img src="${game.thumb}" alt="${game.name}"><p>${game.name}</p>`;
             card.addEventListener('click', () => {
                 if (!userEmail) {
+                    document.getElementById('userEmail').value = '';
                     emailModal.classList.remove('hidden');
                 } else {
                     const embedUrl = `https://slotslaunch.com/iframe/${game.id}?token=RbG9QL8cCFe376wMMYFzU19hNWTmT5uTNHcQ2WUgWdnv90PXxd`;
