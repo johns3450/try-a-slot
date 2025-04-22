@@ -49,9 +49,10 @@ body {
   
   @media (max-width: 600px) {
     .overlay-logo {
-      min-height: 70px;
-      width: 80%;
-      max-height: 170px;
+        width: 80%;
+        height: auto;
+        max-height: 140px;
+        min-height: 70px;
     }
   }
 
