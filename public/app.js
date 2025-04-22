@@ -116,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
           list.forEach(c => {
             if (!c.cca2 || !c.name?.common) {
               console.warn('Invalid country data:', c);
-              return; // Skip invalid entries
+              return;
             }
             const countryData = {
               value: c.cca2,
@@ -141,12 +141,14 @@ document.addEventListener('DOMContentLoaded', () => {
           ];
       
           const countrySelect = document.getElementById('countrySelector');
-          countrySelect.innerHTML = ''; // Clear any existing <option> tags
+          countrySelect.innerHTML = '';
       
           const countryChoice = new Choices(countrySelect, {
             choices,
             searchEnabled: true,
             shouldSort: false,
+            renderChoiceLimit: -1,           
+            searchResultLimit: -1,
             searchFields: ['value', 'label'],
             fuseOptions: {
               keys: ['label'],
@@ -154,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
               ignoreLocation: true,
               getFn: option => option.label
             },
-            placeholder: false, // Disable automatic placeholder
+            placeholder: false,
             searchPlaceholderValue: 'Type to search…',
             allowHTML: true,
             itemSelectText: '',
