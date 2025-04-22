@@ -4,44 +4,36 @@
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
+    // skip if already shown
     if (localStorage.getItem('splashShown')) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
       return;
     }
   
-    finalLogo.style.visibility = 'hidden';
+    finalLogo.style.visibility = 'hidden';  
     let hasLoaded = false;
     window.addEventListener('load', () => { hasLoaded = true; });
   
     function doTransition() {
-      // measure final logo
       const dest = finalLogo.getBoundingClientRect();
-      // measure splash & overlay
-      const src     = splashImg.getBoundingClientRect();
-      const overlayRect = overlay.getBoundingClientRect();
-      // compute true center of the overlay
-      const centerX = overlayRect.left + overlayRect.width  / 2;
-      const centerY = overlayRect.top  + overlayRect.height / 2;
-  
-      // calculate deltas relative to that center
-      const dx   = (dest.left + dest.width/2)  - centerX;
-      const dy   = (dest.top  + dest.height/2) - centerY;
+      const src  = splashImg.getBoundingClientRect();
+      const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
+      const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
       const scale = dest.width / src.width;
   
-      // zoom splash logo
+      // start zoom + background fade
       splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      // fade background only
       overlay.classList.add('hidden');
   
-      // show header logo as soon as zoom finishes
+      // 1) when the zoom on the splash image is done → show header logo
       splashImg.addEventListener('transitionend', e => {
         if (e.propertyName === 'transform') {
           finalLogo.style.visibility = 'visible';
         }
       }, { once: true });
   
-      // remove overlay when the background fade is done
+      // 2) when the overlay background finishes fading → remove it
       overlay.addEventListener('transitionend', e => {
         if (e.propertyName === 'background-color') {
           overlay.remove();
@@ -51,12 +43,12 @@
       localStorage.setItem('splashShown', '1');
     }
   
-    // wait at least 2s & for load
+    // wait at least 2 s AND for load
     setTimeout(() => {
-      hasLoaded ? doTransition() : window.addEventListener('load', doTransition);
+      if (hasLoaded) doTransition();
+      else window.addEventListener('load', doTransition);
     }, 2000);
-  })();
-   
+  })();  
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
