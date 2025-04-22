@@ -1,54 +1,79 @@
-// === splash screen IIFE ===
+// === splash screen IIFE, cookie edition ===
 (function(){
     const overlay   = document.getElementById('initialOverlay');
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
-    // skip if already shown
-    if (localStorage.getItem('splashShown')) {
+    // 1) cookie helpers
+    function hasSplashCookie() {
+      return document.cookie
+        .split('; ')
+        .some(pair => pair.startsWith('splashShown=1'));
+    }
+    function setSplashCookie() {
+      // 1 year expiry
+      document.cookie = 'splashShown=1; max-age=' + (365*24*60*60) + '; path=/';
+    }
+  
+    // 2) skip if already done
+    if (hasSplashCookie()) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
       return;
     }
   
-    finalLogo.style.visibility = 'hidden';  
-    let hasLoaded = false;
-    window.addEventListener('load', () => { hasLoaded = true; });
+    // 3) hide real logo until we’re ready
+    finalLogo.style.visibility = 'hidden';
+    const start = Date.now();
+    let imagesReady = 0;
+    function checkReady() {
+      if (++imagesReady < 3) return;
+      // 2s minimum
+      const wait = Math.max(2000 - (Date.now() - start), 0);
+      setTimeout(doTransition, wait);
+    }
+  
+    // 4) wait for DOM + both logos
+    document.addEventListener('DOMContentLoaded', checkReady);
+    [ splashImg, finalLogo ].forEach(img => {
+      if (img.complete) checkReady();
+      else img.addEventListener('load', checkReady);
+    });
   
     function doTransition() {
-      const dest = finalLogo.getBoundingClientRect();
-      const src  = splashImg.getBoundingClientRect();
-      const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
-      const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
-      const scale = dest.width / src.width;
+      const destR = finalLogo.getBoundingClientRect();
+      const srcR  = splashImg.getBoundingClientRect();
+      const ovR   = overlay.getBoundingClientRect();
   
-      // start zoom + background fade
+      const cx = ovR.left + ovR.width/2;
+      const cy = ovR.top  + ovR.height/2;
+      const dx = (destR.left + destR.width/2)  - cx;
+      const dy = (destR.top  + destR.height/2) - cy;
+      const scale = destR.width / srcR.width;
+  
+      // animate
       splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
       overlay.classList.add('hidden');
   
-      // 1) when the zoom on the splash image is done → show header logo
+      // as soon as the zoom ends, reveal the header logo
       splashImg.addEventListener('transitionend', e => {
         if (e.propertyName === 'transform') {
           finalLogo.style.visibility = 'visible';
         }
       }, { once: true });
   
-      // 2) when the overlay background finishes fading → remove it
+      // when the background fade completes, remove the overlay
       overlay.addEventListener('transitionend', e => {
         if (e.propertyName === 'background-color') {
           overlay.remove();
         }
       }, { once: true });
   
-      localStorage.setItem('splashShown', '1');
+      // mark it done
+      setSplashCookie();
     }
-  
-    // wait at least 2 s AND for load
-    setTimeout(() => {
-      if (hasLoaded) doTransition();
-      else window.addEventListener('load', doTransition);
-    }, 2000);
   })();
+  
   
 
 document.addEventListener('DOMContentLoaded', () => {
