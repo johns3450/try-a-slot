@@ -51,10 +51,6 @@
         const dy    = (destR.top  + destR.height/2) - cy;
         const finalScale = destR.width / srcR.width;
       
-        // step 1: zoom out to 0.9×
-        splashImg.style.transition = 'transform 200ms ease';
-        splashImg.style.transform  = 'translate(0,0) scale(0.9)';
-      
         setTimeout(() => {
           // step 2: zoom in to 1.1×
           splashImg.style.transition = 'transform 300ms ease';
