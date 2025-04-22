@@ -1,66 +1,62 @@
-// === splash screen IIFE: pulse then slide+scale ===
+// === splash screen IIFE ===
 (function(){
     const overlay   = document.getElementById('initialOverlay');
     const splashImg = overlay.querySelector('.overlay-logo');
     const finalLogo = document.querySelector('.site-logo');
   
-    // already shown?
     if (localStorage.getItem('splashShown')) {
       overlay.remove();
       finalLogo.style.visibility = 'visible';
       return;
     }
   
-    // hide the real header logo until the end
     finalLogo.style.visibility = 'hidden';
-  
     let hasLoaded = false;
     window.addEventListener('load', () => { hasLoaded = true; });
   
     function doTransition() {
-        // 1) where our final logo lives…
-        const dest = finalLogo.getBoundingClientRect();
-        // 2) where our splash currently lives…
-        const src  = splashImg.getBoundingClientRect();
-      
-        // compute the vector from splash → final (both centres)
-        const dx = (dest.left + dest.width/2) - (src.left + src.width/2);
-        const dy = (dest.top  + dest.height/2) - (src.top  + src.height/2);
-        const finalScale = dest.width / src.width;
-      
-        // single WA API animation: pulse first (0–300ms), then move+zoom (300–1000ms)
-        splashImg.animate([
-          { transform: 'scale(1)',            offset: 0   },
-          { transform: 'scale(0.8)',          offset: 0.3 },
-          { transform: 'scale(1.2)',          offset: 0.3 },
-          {
-            transform: `translate(${dx}px, ${dy}px) scale(${finalScale})`,
-            offset: 1
-          }
-        ], {
-          duration: 1000,            // total: 300ms pulse + 700ms move
-          easing:   'ease-in-out',
-          fill:     'forwards'
-        }).onfinish = () => {
+      // measure final logo
+      const dest = finalLogo.getBoundingClientRect();
+      // measure splash & overlay
+      const src     = splashImg.getBoundingClientRect();
+      const overlayRect = overlay.getBoundingClientRect();
+      // compute true center of the overlay
+      const centerX = overlayRect.left + overlayRect.width  / 2;
+      const centerY = overlayRect.top  + overlayRect.height / 2;
+  
+      // calculate deltas relative to that center
+      const dx   = (dest.left + dest.width/2)  - centerX;
+      const dy   = (dest.top  + dest.height/2) - centerY;
+      const scale = dest.width / src.width;
+  
+      // zoom splash logo
+      splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
+      // fade background only
+      overlay.classList.add('hidden');
+  
+      // show header logo as soon as zoom finishes
+      splashImg.addEventListener('transitionend', e => {
+        if (e.propertyName === 'transform') {
           finalLogo.style.visibility = 'visible';
+        }
+      }, { once: true });
+  
+      // remove overlay when the background fade is done
+      overlay.addEventListener('transitionend', e => {
+        if (e.propertyName === 'background-color') {
           overlay.remove();
-          localStorage.setItem('splashShown', '1');
-        };
-      
-        // fade the background at the same time:
-        overlay.classList.add('hidden');
-      }      
+        }
+      }, { once: true });
   
-    // enforce 2s minimum & wait for load
+      localStorage.setItem('splashShown', '1');
+    }
+  
+    // wait at least 2s & for load
     setTimeout(() => {
-      if (hasLoaded) doTransition();
-      else window.addEventListener('load', doTransition);
+      hasLoaded ? doTransition() : window.addEventListener('load', doTransition);
     }, 2000);
-  
   })();
-  
-
-  
+   
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
