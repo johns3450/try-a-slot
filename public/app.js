@@ -21,20 +21,19 @@
     finalLogo.style.visibility = 'hidden';
     const start = Date.now();
     let itemsReady = 0;
-
+  
     function checkReady() {
       if (++itemsReady < 5) return;
-      // 3s minimum
       const wait = Math.max(3000 - (Date.now() - start), 0);
       setTimeout(doTransition, wait);
     }
-
+  
     document.addEventListener('DOMContentLoaded', checkReady);
     [ splashImg, finalLogo ].forEach(img => {
       if (img.complete) checkReady();
       else img.addEventListener('load', checkReady);
     });
-
+  
     const icons = document.querySelectorAll('i');
     if (icons.length === 0) {
       checkReady();
@@ -50,55 +49,61 @@
         observer.observe(icon, { attributes: true, childList: true, subtree: true });
       });
     }
-
-    const textBlocks = overlay.querySelectorAll('h1, h2, p');
-    if (textBlocks.length === 0) {
-      checkReady();
-    } else {
-      textBlocks.forEach(block => {
-        if (block.textContent.trim()) {
-          checkReady();
-        } else {
-          const observer = new MutationObserver(() => {
-            if (block.textContent.trim()) {
-              observer.disconnect();
-              checkReady();
-            }
-          });
-          observer.observe(block, { childList: true });
-        }
-      });
-    }
-
+  
+    const blocksToWaitFor = [
+      '.search-bar-container',
+      '.categories',
+      '.intro-text',
+      '.header-container'
+    ];
+  
+    blocksToWaitFor.forEach(selector => {
+      const el = document.querySelector(selector);
+      if (el && el.textContent.trim()) {
+        checkReady();
+      } else if (el) {
+        const observer = new MutationObserver(() => {
+          if (el.textContent.trim()) {
+            observer.disconnect();
+            checkReady();
+          }
+        });
+        observer.observe(el, { childList: true, subtree: true });
+      } else {
+        // If not found at all, still count as ready
+        checkReady();
+      }
+    });
+  
     function doTransition() {
       const destR = finalLogo.getBoundingClientRect();
       const srcR  = splashImg.getBoundingClientRect();
       const ovR   = overlay.getBoundingClientRect();
-
+  
       const cx = ovR.left + ovR.width/2;
       const cy = ovR.top  + ovR.height/2;
       const dx = (destR.left + destR.width/2)  - cx;
       const dy = (destR.top  + destR.height/2) - cy;
       const scale = destR.width / srcR.width;
-
+  
       splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
       overlay.classList.add('hidden');
-
+  
       splashImg.addEventListener('transitionend', e => {
         if (e.propertyName === 'transform') {
           finalLogo.style.visibility = 'visible';
         }
       }, { once: true });
-
+  
       overlay.addEventListener('transitionend', e => {
         if (e.propertyName === 'background-color') {
           overlay.remove();
         }
       }, { once: true });
-
+  
       setSplashCookie();
     }
-})(); 
+  })();   
 
 document.addEventListener('DOMContentLoaded', () => {
     const API_BASE = 'https://api.tryaslot.com';
