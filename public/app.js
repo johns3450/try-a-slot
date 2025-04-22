@@ -1,54 +1,63 @@
-// === splash screen IIFE ===
+// === splash screen IIFE with 3‑step zoom via WAAPI ===
 (function(){
-    const overlay   = document.getElementById('initialOverlay');
-    const splashImg = overlay.querySelector('.overlay-logo');
-    const finalLogo = document.querySelector('.site-logo');
-  
-    // skip if already shown
-    if (localStorage.getItem('splashShown')) {
-      overlay.remove();
+  const overlay   = document.getElementById('initialOverlay');
+  const splashImg = overlay.querySelector('.overlay-logo');
+  const finalLogo = document.querySelector('.site-logo');
+
+  // If already seen, ditch splash and show header logo immediately
+  if (localStorage.getItem('splashShown')) {
+    overlay.remove();
+    finalLogo.style.visibility = 'visible';
+    return;
+  }
+
+  // hide the header logo until our own animation ends
+  finalLogo.style.visibility = 'hidden';
+
+  // wait for full load
+  let hasLoaded = false;
+  window.addEventListener('load', () => { hasLoaded = true; });
+
+  function doTransition() {
+    // measure source/target
+    const dest = finalLogo.getBoundingClientRect();
+    const src  = splashImg.getBoundingClientRect();
+    const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
+    const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
+    const scale = dest.width / src.width;
+
+    // kick off the background fade
+    overlay.classList.add('hidden');
+
+    // define your 3‑step zoom keyframes
+    const keyframes = [
+      { transform: 'translate(0,0) scale(1)' },      // start
+      { transform: 'translate(0,0) scale(0.9)' },    // slight zoom-out
+      { transform: 'translate(0,0) scale(1.2)' },    // then zoom-in
+      { transform: `translate(${dx}px, ${dy}px) scale(${scale})` } // final
+    ];
+    const timing = {
+      duration: 750,           // total 0.5s
+      easing: 'ease-in-out',
+      fill: 'forwards'
+    };
+    const anim = splashImg.animate(keyframes, timing);
+
+    // when the zoom finishes, show the real logo
+    anim.onfinish = () => {
       finalLogo.style.visibility = 'visible';
-      return;
-    }
-  
-    finalLogo.style.visibility = 'hidden';  
-    let hasLoaded = false;
-    window.addEventListener('load', () => { hasLoaded = true; });
-  
-    function doTransition() {
-      const dest = finalLogo.getBoundingClientRect();
-      const src  = splashImg.getBoundingClientRect();
-      const dx   = (dest.left + dest.width/2) - (window.innerWidth/2);
-      const dy   = (dest.top  + dest.height/2) - (window.innerHeight/2);
-      const scale = dest.width / src.width;
-  
-      // start zoom + background fade
-      splashImg.style.transform = `translate(${dx}px, ${dy}px) scale(${scale})`;
-      overlay.classList.add('hidden');
-  
-      // 1) when the zoom on the splash image is done → show header logo
-      splashImg.addEventListener('transitionend', e => {
-        if (e.propertyName === 'transform') {
-          finalLogo.style.visibility = 'visible';
-        }
-      }, { once: true });
-  
-      // 2) when the overlay background finishes fading → remove it
-      overlay.addEventListener('transitionend', e => {
-        if (e.propertyName === 'background-color') {
-          overlay.remove();
-        }
-      }, { once: true });
-  
+      overlay.remove();
       localStorage.setItem('splashShown', '1');
-    }
-  
-    // wait at least 2 s AND for load
-    setTimeout(() => {
-      if (hasLoaded) doTransition();
-      else window.addEventListener('load', doTransition);
-    }, 2000);
-  })();
+    };
+  }
+
+  // enforce 2s minimum & wait for load
+  setTimeout(() => {
+    if (hasLoaded) doTransition();
+    else window.addEventListener('load', doTransition);
+  }, 2000);
+})();
+
   
 
 document.addEventListener('DOMContentLoaded', () => {
