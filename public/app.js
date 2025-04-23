@@ -764,9 +764,6 @@ function showSpinner() {
     let resendTimer = 0;
 let resendInterval;
 const resendNotice = document.getElementById('resendNotice');
-if (!resendNotice) {
-    console.error('❌ resendNotice element not found!');
-  }
 
 function startResendTimer() {
     resendTimer = 60;
@@ -796,7 +793,6 @@ function updateResendNotice() {
 
 window.resendVerificationEmail = async function() {
     if (!pendingEmail) return;
-    console.log('🔁 Resend button clicked. Sending request...');
     resendNotice.textContent = 'Resending... Please check your inbox.';
     try {
       await fetch(`${API_BASE}/api/register`, {

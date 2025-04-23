@@ -13,12 +13,17 @@ router.post('/register', async (req, res) => {
         }
 
         let users = loadUsers();
+        
         const existingUser = users.find(u => u.email === email);
 if (existingUser) {
     if (existingUser.verified) {
-        return res.status(400).json({ success: false, message: 'You email is already verified.' });
+        return res.status(400).json({ success: false, message: 'Your email is already verified.' });
     } else {
-        return res.json({ success: true, message: 'Please verify your email.' });
+        // Re-send the verification email
+        const verificationUrl = `${process.env.BASE_URL}/api/verify?email=${encodeURIComponent(email)}`;
+        await sendVerificationEmail(email, verificationUrl);
+        console.log(`🔁 Verification email re-sent to ${email}`);
+        return res.json({ success: true, message: 'Verification email re-sent.' });
     }
 }
 
