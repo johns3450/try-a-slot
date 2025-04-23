@@ -662,6 +662,8 @@ function showSpinner() {
                 updateUserProfileVisibility();
             } else if (data.status === 'pending') {
                 showModal('verificationState');
+                resendNotice.style.display = 'block';
+                startResendTimer();
             } else if (data.status === 'new') {
                 showModal('registrationState');
             }
@@ -702,7 +704,11 @@ function showSpinner() {
             const data = await res.json();
     
             if (data.success) {
-                showModal('verificationState');
+                resendNotice.style.display = 'none';
+                setTimeout(() => {
+                resendNotice.style.display = 'block';
+                startResendTimer();
+                }, 10000);
             } else {
                 showError(data.message || 'Registration failed.', 'registerSubmit-server');
             }
@@ -738,6 +744,7 @@ function showSpinner() {
             if (data.verified) {
                 localStorage.setItem('tryaslot-email', email);
                 userEmail = email;
+                resendNotice.style.display = 'none';
                 hideModal();
                 updateUserProfileVisibility();
             } else {
@@ -748,6 +755,46 @@ function showSpinner() {
             showError('An error occurred. Please try again.');
         }
     });
+
+    let resendTimer = 0;
+let resendInterval;
+const resendNotice = document.getElementById('resendNotice');
+
+function startResendTimer() {
+    resendTimer = 60;
+    updateResendNotice();
+
+    clearInterval(resendInterval);
+    resendInterval = setInterval(() => {
+        resendTimer--;
+        if (resendTimer <= 0) {
+            clearInterval(resendInterval);
+            resendNotice.innerHTML = `<span style="cursor:pointer;text-decoration:none;" onclick="resendVerificationEmail()">No email received? Click to resend.</span>`;
+        } else {
+            updateResendNotice();
+        }
+    }, 1000);
+}
+
+function updateResendNotice() {
+    resendNotice.textContent = `No email received? You can resend in ${resendTimer}s.`;
+}
+
+async function resendVerificationEmail() {
+    if (!pendingEmail) return;
+    resendNotice.textContent = 'Resending... Please check you inbox.';
+    try {
+        await fetch(`${API_BASE}/api/register`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email: pendingEmail, country: 'GB', captcha: 'ABC123' })
+        });
+        setTimeout(startResendTimer, 5000);
+    } catch (err) {
+        resendNotice.textContent = 'Failed to resend. Try again shortly.';
+    }
+}
+
 
     document.getElementById('userProfile').addEventListener('click', () => {
         const profileModal = document.getElementById('profileModal');
