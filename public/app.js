@@ -768,18 +768,24 @@ const resendNotice = document.getElementById('resendNotice');
 function startResendTimer() {
     resendTimer = 60;
     updateResendNotice();
-
+  
     clearInterval(resendInterval);
     resendInterval = setInterval(() => {
-        resendTimer--;
-        if (resendTimer <= 0) {
-            clearInterval(resendInterval);
-            resendNotice.innerHTML = `<span style="cursor:pointer;text-decoration:none;" onclick="resendVerificationEmail()">No email received? Click to resend.</span>`;
-        } else {
-            updateResendNotice();
-        }
+      resendTimer--;
+      if (resendTimer <= 0) {
+        clearInterval(resendInterval);
+        resendNotice.innerHTML = '';
+        const span = document.createElement('span');
+        span.textContent = 'No email received? Click to resend.';
+        span.style.cursor = 'pointer';
+        span.style.textDecoration = 'none';
+        span.addEventListener('click', resendVerificationEmail);
+        resendNotice.appendChild(span);
+      } else {
+        updateResendNotice();
+      }
     }, 1000);
-}
+  }
 
 function updateResendNotice() {
     resendNotice.textContent = `No email received? You can resend in ${resendTimer}s.`;
