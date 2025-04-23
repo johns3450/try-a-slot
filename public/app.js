@@ -703,15 +703,17 @@ function showSpinner() {
             });              
             const data = await res.json();
     
-            if (data.success) {
+            if (data.success || data.message === 'User exists but not verified.') {
+                hideModal();
+                showModal('verificationState');
                 resendNotice.style.display = 'none';
                 setTimeout(() => {
-                resendNotice.style.display = 'block';
-                startResendTimer();
+                    resendNotice.style.display = 'block';
+                    startResendTimer();
                 }, 10000);
             } else {
                 showError(data.message || 'Registration failed.', 'registerSubmit-server');
-            }
+            }            
         } catch (err) {
             console.error('Registration error:', err);
             showError('An error occurred. Please try again.', 'registerSubmit-error');
@@ -780,21 +782,20 @@ function updateResendNotice() {
     resendNotice.textContent = `No email received? You can resend in ${resendTimer}s.`;
 }
 
-async function resendVerificationEmail() {
+window.resendVerificationEmail = async function() {
     if (!pendingEmail) return;
-    resendNotice.textContent = 'Resending... Please check you inbox.';
+    resendNotice.textContent = 'Resending... Please check your inbox.';
     try {
-        await fetch(`${API_BASE}/api/register`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: pendingEmail, country: 'GB', captcha: 'ABC123' })
-        });
-        setTimeout(startResendTimer, 5000);
+      await fetch(`${API_BASE}/api/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: pendingEmail, country: 'GB', captcha: 'ABC123' })
+      });
+      setTimeout(startResendTimer, 5000);
     } catch (err) {
-        resendNotice.textContent = 'Failed to resend. Try again shortly.';
+      resendNotice.textContent = 'Failed to resend. Try again shortly.';
     }
-}
-
+  };
 
     document.getElementById('userProfile').addEventListener('click', () => {
         const profileModal = document.getElementById('profileModal');

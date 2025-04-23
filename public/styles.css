@@ -554,7 +554,8 @@ input#userEmail {
   }
 
   #emailModal .choices__inner {
-    min-height: auto;
+    min-height: 35px;
+    width: 100%;
     box-sizing: border-box;
   }
 
@@ -647,6 +648,8 @@ input#userEmail {
     margin-bottom: 1rem;
     border-radius: 3px;
     border: 1px solid rgb(118, 118, 118);
+    min-height: 35px;
+    width: 100%;
   }
   
   .choices__placeholder {
@@ -674,11 +677,6 @@ input#userEmail {
 
 .choices__list--single {
     padding: 0 !important;
-}
-
-.choices {
-    min-height: 35px;
-    width: 100%;
 }
 
   .flag-icon {

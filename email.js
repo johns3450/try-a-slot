@@ -8,24 +8,25 @@ router.post('/register', async (req, res) => {
         if (!email || !country || !captcha) {
             return res.status(400).json({ success: false, message: 'Missing fields.' });
         }
-        // Dummy captcha check
         if (captcha !== 'ABC123') {
             return res.status(400).json({ success: false, message: 'Captcha incorrect.' });
         }
 
         let users = loadUsers();
-        if (users.some(u => u.email === email)) {
-            return res.status(400).json({ success: false, message: 'User already exists.' });
-        }
+        const existingUser = users.find(u => u.email === email);
+if (existingUser) {
+    if (existingUser.verified) {
+        return res.status(400).json({ success: false, message: 'You email is already verified.' });
+    } else {
+        return res.json({ success: true, message: 'Please verify your email.' });
+    }
+}
 
-        // Save new user
         users.push({ email, country, verified: false });
         saveUsers(users);
 
-        // Build verification URL
         const verificationUrl = `${process.env.BASE_URL}/api/verify?email=${encodeURIComponent(email)}`;
 
-        // Send the email
         await sendVerificationEmail(email, verificationUrl);
         console.log(`Verification email sent to ${email}`);
 
