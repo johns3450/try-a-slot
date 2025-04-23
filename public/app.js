@@ -663,7 +663,10 @@ function showSpinner() {
             } else if (data.status === 'pending') {
                 showModal('verificationState');
                 resendNotice.style.display = 'block';
-                startResendTimer();
+                setTimeout(() => {
+                    resendNotice.style.display = 'block';
+                    startResendTimer();
+                }, 10000);
             } else if (data.status === 'new') {
                 showModal('registrationState');
             }
